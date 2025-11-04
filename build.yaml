@@ -1,0 +1,6 @@
+# Build configuration for Hive code generation
+targets:
+  $default:
+    builders:
+      hive_generator|hive:
+        enabled: true
