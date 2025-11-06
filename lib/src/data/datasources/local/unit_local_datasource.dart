@@ -12,6 +12,7 @@ abstract class UnitLocalDataSource {
 
 class UnitLocalDataSourceImpl implements UnitLocalDataSource {
   static const String boxName = 'units';
+  static const String wordsBoxName = 'words';
   final Box<UnitModel> box;
 
   UnitLocalDataSourceImpl(this.box);
@@ -39,6 +40,24 @@ class UnitLocalDataSourceImpl implements UnitLocalDataSource {
   @override
   Future<void> deleteUnit(String unitId) async {
     try {
+      // First, delete all words associated with this unit
+      final wordsBox = await Hive.openBox(wordsBoxName);
+
+      // Get all keys of words that belong to this unit
+      final keysToDelete = <dynamic>[];
+      for (final key in wordsBox.keys) {
+        final word = wordsBox.get(key);
+        if (word != null && word.unitId == unitId) {
+          keysToDelete.add(key);
+        }
+      }
+
+      // Delete all words belonging to this unit
+      for (final key in keysToDelete) {
+        await wordsBox.delete(key);
+      }
+
+      // Then delete the unit itself
       await box.delete(unitId);
     } catch (e) {
       throw CacheException('Failed to delete unit: $e');
@@ -50,7 +69,7 @@ class UnitLocalDataSourceImpl implements UnitLocalDataSource {
     try {
       final unit = box.get(unitId);
       if (unit == null) {
-        throw CacheException('Unit not found');
+        throw const CacheException('Unit not found');
       }
       return unit;
     } catch (e) {
