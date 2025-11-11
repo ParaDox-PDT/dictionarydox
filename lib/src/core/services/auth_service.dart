@@ -9,7 +9,15 @@ class AuthService {
   AuthService._internal();
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+  // Web Client ID from Firebase Console
+  static const String _webClientId =
+      '551056648202-sa56fq00eo9a4els0286vq8tc355trjd.apps.googleusercontent.com';
+
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    // Use web client ID for web platform
+    clientId: kIsWeb ? _webClientId : null,
+  );
 
   /// Get current user
   User? get currentUser => _firebaseAuth.currentUser;
