@@ -61,5 +61,18 @@
 	<!-- Firebase Cloud Messaging -->
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
+	<!-- Google Sign-In URL Scheme -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<!-- Reversed client ID from GoogleService-Info.plist -->
+				<string>com.googleusercontent.apps.551056648202-sa56fq00eo9a4els0286vq8tc355trjd</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>
