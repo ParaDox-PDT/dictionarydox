@@ -7,6 +7,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 
+import 'web_notification_stub.dart'
+    if (dart.library.html) 'web_notification_web.dart';
+
 /// Background message handler - must be a top-level function
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -237,13 +240,14 @@ class NotificationService {
 
   /// Show local notification
   Future<void> _showLocalNotification(RemoteMessage message) async {
-    if (kIsWeb) {
-      // Web notifications are handled by the browser
-      return;
-    }
-
     final notification = message.notification;
     if (notification == null) return;
+
+    if (kIsWeb) {
+      // Show browser notification for web
+      _showWebNotification(notification);
+      return;
+    }
 
     // Get image URL from notification (supports multiple formats)
     String? imageUrl =
@@ -331,6 +335,11 @@ class NotificationService {
       }
     }
     return null;
+  }
+
+  /// Show web notification using browser API
+  void _showWebNotification(RemoteNotification notification) {
+    showWebNotification(notification);
   }
 
   /// Handle notification tap
