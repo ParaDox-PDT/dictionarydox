@@ -121,7 +121,7 @@ class AuthService {
       final user = currentUser;
       if (user != null) {
         await user.delete();
-        
+
         // Only sign out from Google Sign-In on mobile
         if (!kIsWeb) {
           await _googleSignIn.signOut();
