@@ -1,4 +1,5 @@
 import 'package:dictionarydox/src/core/network/dio_client.dart';
+import 'package:dictionarydox/src/core/services/auth_service.dart';
 import 'package:dictionarydox/src/core/storage/hive_storage_service.dart';
 import 'package:dictionarydox/src/core/storage/storage_service.dart';
 import 'package:dictionarydox/src/core/storage/web_storage_service.dart';
@@ -26,6 +27,7 @@ import 'package:dictionarydox/src/domain/usecases/get_unit_words.dart';
 import 'package:dictionarydox/src/domain/usecases/search_images.dart';
 import 'package:dictionarydox/src/domain/usecases/validate_word.dart';
 import 'package:dictionarydox/src/presentation/blocs/add_word/add_word_bloc.dart';
+import 'package:dictionarydox/src/presentation/blocs/auth/auth_bloc.dart';
 import 'package:dictionarydox/src/presentation/blocs/image_search/image_search_bloc.dart';
 import 'package:dictionarydox/src/presentation/blocs/quiz/quiz_bloc.dart';
 import 'package:dictionarydox/src/presentation/blocs/unit/unit_bloc.dart';
@@ -77,7 +79,8 @@ Future<void> initDependencies() async {
     instanceName: 'unitStorage',
   );
 
-  // Core
+  // Core Services
+  sl.registerLazySingleton<AuthService>(() => AuthService());
   sl.registerLazySingleton<DioClient>(() => DioClient());
   sl.registerLazySingleton<Dio>(() => sl<DioClient>().instance);
 
@@ -133,6 +136,8 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton(() => ValidateWord(sl()));
 
   // BLoCs (factories for new instances)
+  sl.registerFactory(() => AuthBloc(sl()));
+
   sl.registerFactory(() => AddWordBloc(
         validateWord: sl(),
         searchImages: sl(),

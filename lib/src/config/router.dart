@@ -1,9 +1,11 @@
+import 'package:dictionarydox/src/core/services/auth_service.dart';
 import 'package:dictionarydox/src/domain/entities/unit.dart';
 import 'package:dictionarydox/src/presentation/blocs/quiz/quiz_event.dart';
 import 'package:dictionarydox/src/presentation/pages/add_word_page.dart';
 import 'package:dictionarydox/src/presentation/pages/create_unit_page.dart';
 import 'package:dictionarydox/src/presentation/pages/home_page.dart';
 import 'package:dictionarydox/src/presentation/pages/image_search_page.dart';
+import 'package:dictionarydox/src/presentation/pages/login_page.dart';
 import 'package:dictionarydox/src/presentation/pages/quiz_page.dart';
 import 'package:dictionarydox/src/presentation/pages/quiz_type_selector_page.dart';
 import 'package:dictionarydox/src/presentation/pages/splash_screen.dart';
@@ -12,10 +14,37 @@ import 'package:go_router/go_router.dart';
 
 final router = GoRouter(
   initialLocation: '/splash',
+  redirect: (context, state) {
+    final authService = AuthService();
+    final isSignedIn = authService.isSignedIn;
+    final isGoingToLogin = state.matchedLocation == '/login';
+    final isGoingToSplash = state.matchedLocation == '/splash';
+
+    // Allow splash screen
+    if (isGoingToSplash) {
+      return null;
+    }
+
+    // If not signed in and not going to login, redirect to login
+    if (!isSignedIn && !isGoingToLogin) {
+      return '/login';
+    }
+
+    // If signed in and going to login, redirect to home
+    if (isSignedIn && isGoingToLogin) {
+      return '/';
+    }
+
+    return null;
+  },
   routes: [
     GoRoute(
       path: '/splash',
       builder: (context, state) => const SplashScreen(),
+    ),
+    GoRoute(
+      path: '/login',
+      builder: (context, state) => const LoginPage(),
     ),
     GoRoute(
       path: '/',

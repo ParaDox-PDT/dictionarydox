@@ -1,3 +1,4 @@
+import 'package:dictionarydox/src/core/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -39,10 +40,15 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.forward();
 
-    // Navigate to home after animation
+    // Check auth status and navigate
     Future.delayed(const Duration(milliseconds: 2500), () {
       if (mounted) {
-        context.go('/');
+        final authService = AuthService();
+        if (authService.isSignedIn) {
+          context.go('/');
+        } else {
+          context.go('/login');
+        }
       }
     });
   }
