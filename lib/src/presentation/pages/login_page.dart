@@ -151,16 +151,9 @@ class LoginView extends StatelessWidget {
                                   ),
                                 ),
                               )
-                            : Image.asset(
-                                'assets/images/google_logo.png',
-                                width: 24,
-                                height: 24,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return const Icon(
-                                    Icons.login,
-                                    size: 24,
-                                  );
-                                },
+                            : const Icon(
+                                Icons.login,
+                                size: 24,
                               ),
                         label: Text(
                           isLoading ? 'Signing in...' : 'Sign in with Google',

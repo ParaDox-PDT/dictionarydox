@@ -35,8 +35,16 @@ class AuthService {
         print('Starting Google Sign-In...');
       }
 
-      // Trigger the authentication flow
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      GoogleSignInAccount? googleUser;
+
+      if (kIsWeb) {
+        // Web: Try silent sign-in first, then fall back to regular sign-in
+        googleUser = await _googleSignIn.signInSilently();
+        googleUser ??= await _googleSignIn.signIn();
+      } else {
+        // Mobile: Use regular sign-in flow
+        googleUser = await _googleSignIn.signIn();
+      }
 
       if (googleUser == null) {
         // User canceled the sign-in
