@@ -6,12 +6,17 @@ import 'package:dictionarydox/src/presentation/pages/home_page.dart';
 import 'package:dictionarydox/src/presentation/pages/image_search_page.dart';
 import 'package:dictionarydox/src/presentation/pages/quiz_page.dart';
 import 'package:dictionarydox/src/presentation/pages/quiz_type_selector_page.dart';
+import 'package:dictionarydox/src/presentation/pages/splash_screen.dart';
 import 'package:dictionarydox/src/presentation/pages/unit_details_page.dart';
 import 'package:go_router/go_router.dart';
 
 final router = GoRouter(
-  initialLocation: '/',
+  initialLocation: '/splash',
   routes: [
+    GoRoute(
+      path: '/splash',
+      builder: (context, state) => const SplashScreen(),
+    ),
     GoRoute(
       path: '/',
       builder: (context, state) => const HomePage(),

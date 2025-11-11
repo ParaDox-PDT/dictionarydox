@@ -1,4 +1,4 @@
-package com.example.dictionarydox
+package app.dicitionarydox.uz
 
 import io.flutter.embedding.android.FlutterActivity
 

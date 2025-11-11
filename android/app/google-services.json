@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "551056648202",
+    "project_id": "dictionarydox",
+    "storage_bucket": "dictionarydox.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:551056648202:android:3703ca3c8a0b8ea15117f3",
+        "android_client_info": {
+          "package_name": "app.dicitionarydox.uz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "551056648202-rq951mm551vjeicg7ufvhc4tfmjme06d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "app.dicitionarydox.uz",
+            "certificate_hash": "ff1f9e1a1181a3ee8e30bd64991747f38b820942"
+          }
+        },
+        {
+          "client_id": "551056648202-8095rndmhrn4rq2pgfpmgtkijccp7j8a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYwZo94GLUatXvwk6GbEK0R-eJwuZaEgk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "551056648202-8095rndmhrn4rq2pgfpmgtkijccp7j8a.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "551056648202-5su31eja3bjqlrt08rliri1201tm0qtq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.dictionarydox"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

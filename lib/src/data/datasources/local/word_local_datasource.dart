@@ -1,6 +1,6 @@
 import 'package:dictionarydox/src/core/error/exceptions.dart';
+import 'package:dictionarydox/src/core/storage/storage_service.dart';
 import 'package:dictionarydox/src/data/models/word_model.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
 abstract class WordLocalDataSource {
   Future<WordModel> addWord(WordModel word);
@@ -12,15 +12,14 @@ abstract class WordLocalDataSource {
 }
 
 class WordLocalDataSourceImpl implements WordLocalDataSource {
-  static const String boxName = 'words';
-  final Box<WordModel> box;
+  final StorageService storage;
 
-  WordLocalDataSourceImpl(this.box);
+  WordLocalDataSourceImpl(this.storage);
 
   @override
   Future<WordModel> addWord(WordModel word) async {
     try {
-      await box.put(word.id, word);
+      await storage.put(word.id, word);
       return word;
     } catch (e) {
       throw CacheException('Failed to add word: $e');
@@ -30,7 +29,7 @@ class WordLocalDataSourceImpl implements WordLocalDataSource {
   @override
   Future<WordModel> updateWord(WordModel word) async {
     try {
-      await box.put(word.id, word);
+      await storage.put(word.id, word);
       return word;
     } catch (e) {
       throw CacheException('Failed to update word: $e');
@@ -40,7 +39,7 @@ class WordLocalDataSourceImpl implements WordLocalDataSource {
   @override
   Future<void> deleteWord(String wordId) async {
     try {
-      await box.delete(wordId);
+      await storage.delete(wordId);
     } catch (e) {
       throw CacheException('Failed to delete word: $e');
     }
@@ -49,9 +48,9 @@ class WordLocalDataSourceImpl implements WordLocalDataSource {
   @override
   Future<WordModel> getWord(String wordId) async {
     try {
-      final word = box.get(wordId);
+      final word = storage.get<WordModel>(wordId);
       if (word == null) {
-        throw CacheException('Word not found');
+        throw const CacheException('Word not found');
       }
       return word;
     } catch (e) {
@@ -62,7 +61,10 @@ class WordLocalDataSourceImpl implements WordLocalDataSource {
   @override
   Future<List<WordModel>> getWordsByUnit(String unitId) async {
     try {
-      return box.values.where((word) => word.unitId == unitId).toList();
+      return storage
+          .getAll<WordModel>()
+          .where((word) => word.unitId == unitId)
+          .toList();
     } catch (e) {
       throw CacheException('Failed to get words by unit: $e');
     }
@@ -71,7 +73,7 @@ class WordLocalDataSourceImpl implements WordLocalDataSource {
   @override
   Future<List<WordModel>> getAllWords() async {
     try {
-      return box.values.toList();
+      return storage.getAll<WordModel>().toList();
     } catch (e) {
       throw CacheException('Failed to get all words: $e');
     }

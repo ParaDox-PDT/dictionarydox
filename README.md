@@ -1,8 +1,10 @@
 # DictionaryDox
 
-A modern Flutter vocabulary trainer app built with Clean Architecture.
+A modern Flutter vocabulary trainer app built with Clean Architecture. Now available on **Web, iOS, and Android**! 🌐📱
 
-## Features
+[![Netlify Status](https://api.netlify.com/api/v1/badges/your-badge-id/deploy-status)](https://app.netlify.com/sites/your-site/deploys)
+
+## 🌟 Features
 
 - **Unit Management**: Create and organize vocabulary into units
 - **Word Management**: Add words with English-Uzbek translations
@@ -16,7 +18,24 @@ A modern Flutter vocabulary trainer app built with Clean Architecture.
   - Translation Quiz: Build word from letter tiles
   - Image Quiz: Match word to correct image
   - Listening Quiz: Listen and build word from letters
-- **Offline Support**: All data stored locally with Hive
+- **Cross-Platform Storage**: 
+  - Mobile/Desktop: Hive (local database)
+  - Web: Local Storage (browser storage)
+- **Responsive Design**: Optimized for all screen sizes
+- **Splash Screen**: Beautiful animated splash screen
+
+## 🚀 Live Demo
+
+**Web App**: [https://dictionarydox.netlify.app](https://dictionarydox.netlify.app)
+
+## 📱 Platform Support
+
+- ✅ **Web** - Fully optimized with responsive design
+- ✅ **Android** - Native Android app
+- ✅ **iOS** - Native iOS app
+- ✅ **Windows** - Desktop application
+- ✅ **macOS** - Desktop application
+- ✅ **Linux** - Desktop application
 
 ## Architecture
 
@@ -42,17 +61,20 @@ lib/
         └── widgets/      # Reusable widgets
 ```
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 - **State Management**: flutter_bloc
 - **Dependency Injection**: get_it
 - **HTTP Client**: dio
-- **Local Storage**: hive, hive_flutter
+- **Local Storage**: 
+  - Mobile/Desktop: hive, hive_flutter
+  - Web: shared_preferences (Local Storage)
 - **Audio**: audioplayers, flutter_tts
 - **Images**: cached_network_image
 - **Routing**: go_router
+- **Platform Detection**: Conditional imports for web/mobile compatibility
 
-## Setup
+## 💻 Setup
 
 ### Prerequisites
 
@@ -62,12 +84,17 @@ lib/
 ### Installation
 
 1. Clone the repository
+   ```bash
+   git clone https://github.com/ParaDox-PDT/dictionarydox.git
+   cd dictionarydox
+   ```
+
 2. Install dependencies:
    ```bash
    flutter pub get
    ```
 
-3. Generate Hive adapters:
+3. Generate Hive adapters (for mobile):
    ```bash
    flutter pub run build_runner build --delete-conflicting-outputs
    ```
@@ -78,8 +105,47 @@ lib/
 
 5. Run the app:
    ```bash
+   # For mobile
    flutter run
+   
+   # For web
+   flutter run -d chrome
+   
+   # For desktop
+   flutter run -d windows  # or macos, linux
    ```
+
+## 🌐 Web Deployment
+
+### Build for Web
+```bash
+flutter build web --release
+```
+
+### Deploy to Netlify
+
+#### Option 1: Netlify CLI (Recommended)
+```bash
+# Install Netlify CLI
+npm install -g netlify-cli
+
+# Login
+netlify login
+
+# Deploy
+netlify deploy --prod --dir=build/web
+```
+
+#### Option 2: PowerShell Script
+```bash
+./deploy-netlify.ps1
+```
+
+#### Option 3: Drag & Drop
+1. Go to [Netlify](https://app.netlify.com/)
+2. Drag the `build/web` folder
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions.
 
 ## Usage
 

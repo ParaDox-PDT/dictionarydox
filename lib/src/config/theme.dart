@@ -36,6 +36,7 @@ class AppTheme {
       backgroundColor: backgroundColor,
       foregroundColor: textPrimary,
       elevation: 0,
+      scrolledUnderElevation: 0,
       centerTitle: false,
       titleTextStyle: GoogleFonts.poppins(
         color: textPrimary,
@@ -146,6 +147,7 @@ class AppTheme {
       backgroundColor: darkBackground,
       foregroundColor: darkTextPrimary,
       elevation: 0,
+      scrolledUnderElevation: 0,
       centerTitle: false,
       titleTextStyle: GoogleFonts.poppins(
         color: darkTextPrimary,

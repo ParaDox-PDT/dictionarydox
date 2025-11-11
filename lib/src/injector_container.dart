@@ -1,4 +1,8 @@
 import 'package:dictionarydox/src/core/network/dio_client.dart';
+import 'package:dictionarydox/src/core/storage/hive_storage_service.dart';
+import 'package:dictionarydox/src/core/storage/storage_service.dart';
+import 'package:dictionarydox/src/core/storage/web_storage_service.dart';
+import 'package:dictionarydox/src/core/utils/platform_utils.dart';
 import 'package:dictionarydox/src/data/datasources/local/unit_local_datasource.dart';
 import 'package:dictionarydox/src/data/datasources/local/word_local_datasource.dart';
 import 'package:dictionarydox/src/data/datasources/remote/dictionary_remote_datasource.dart';
@@ -32,20 +36,46 @@ import 'package:hive_flutter/hive_flutter.dart';
 final sl = GetIt.instance;
 
 Future<void> initDependencies() async {
-  // Initialize Hive
-  await Hive.initFlutter();
+  // Initialize storage based on platform
+  late StorageService wordStorage;
+  late StorageService unitStorage;
 
-  // Register Hive adapters
-  Hive.registerAdapter(WordModelAdapter());
-  Hive.registerAdapter(UnitModelAdapter());
+  if (PlatformUtils.isWeb) {
+    // Web storage using SharedPreferences
+    wordStorage = WebStorageService(
+      prefix: 'words',
+      fromJson: (json) => WordModel.fromJson(json),
+      toJson: (value) => (value as WordModel).toJson(),
+    );
 
-  // Open Hive boxes
-  final wordBox = await Hive.openBox<WordModel>('words');
-  final unitBox = await Hive.openBox<UnitModel>('units');
+    unitStorage = WebStorageService(
+      prefix: 'units',
+      fromJson: (json) => UnitModel.fromJson(json),
+      toJson: (value) => (value as UnitModel).toJson(),
+    );
+  } else {
+    // Mobile/Desktop storage using Hive
+    await Hive.initFlutter();
+    Hive.registerAdapter(WordModelAdapter());
+    Hive.registerAdapter(UnitModelAdapter());
 
-  // Register boxes
-  sl.registerLazySingleton<Box<WordModel>>(() => wordBox);
-  sl.registerLazySingleton<Box<UnitModel>>(() => unitBox);
+    wordStorage = HiveStorageService<WordModel>('words');
+    unitStorage = HiveStorageService<UnitModel>('units');
+  }
+
+  // Initialize storages
+  await wordStorage.init();
+  await unitStorage.init();
+
+  // Register storages
+  sl.registerLazySingleton<StorageService>(
+    () => wordStorage,
+    instanceName: 'wordStorage',
+  );
+  sl.registerLazySingleton<StorageService>(
+    () => unitStorage,
+    instanceName: 'unitStorage',
+  );
 
   // Core
   sl.registerLazySingleton<DioClient>(() => DioClient());
@@ -53,11 +83,15 @@ Future<void> initDependencies() async {
 
   // Data sources
   sl.registerLazySingleton<WordLocalDataSource>(
-    () => WordLocalDataSourceImpl(sl<Box<WordModel>>()),
+    () => WordLocalDataSourceImpl(
+        sl<StorageService>(instanceName: 'wordStorage')),
   );
 
   sl.registerLazySingleton<UnitLocalDataSource>(
-    () => UnitLocalDataSourceImpl(sl<Box<UnitModel>>()),
+    () => UnitLocalDataSourceImpl(
+      unitStorage: sl<StorageService>(instanceName: 'unitStorage'),
+      wordStorage: sl<StorageService>(instanceName: 'wordStorage'),
+    ),
   );
 
   sl.registerLazySingleton<DictionaryRemoteDataSource>(

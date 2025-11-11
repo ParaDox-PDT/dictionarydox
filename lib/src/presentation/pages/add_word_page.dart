@@ -1,4 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:dictionarydox/src/core/utils/responsive_utils.dart';
 import 'package:dictionarydox/src/injector_container.dart';
 import 'package:dictionarydox/src/presentation/blocs/add_word/add_word_bloc.dart';
 import 'package:dictionarydox/src/presentation/blocs/add_word/add_word_event.dart';
@@ -70,241 +71,247 @@ class _AddWordPageState extends State<AddWordPage> {
             appBar: AppBar(
               title: const Text('Add Word'),
             ),
-            body: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    TextFormField(
-                      controller: _englishController,
-                      decoration: const InputDecoration(
-                        labelText: 'English Word',
-                        hintText: 'Enter the English word',
+            body: ResponsiveWrapper(
+              maxWidth: 800,
+              child: SingleChildScrollView(
+                padding: ResponsiveUtils.getResponsivePadding(context),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      TextFormField(
+                        controller: _englishController,
+                        decoration: const InputDecoration(
+                          labelText: 'English Word',
+                          hintText: 'Enter the English word',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please enter an English word';
+                          }
+                          return null;
+                        },
                       ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Please enter an English word';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    DdButton.secondary(
-                      text: 'Validate Word',
-                      onPressed: () {
-                        if (_englishController.text.trim().isNotEmpty) {
-                          context.read<AddWordBloc>().add(
-                                ValidateEnglishWordEvent(
-                                    _englishController.text.trim()),
-                              );
-                          setState(() => _hasValidated = true);
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 24),
-                    BlocBuilder<AddWordBloc, AddWordState>(
-                      builder: (context, state) {
-                        if (state is AddWordValidating) {
-                          return const Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: CircularProgressIndicator(),
-                            ),
-                          );
-                        }
+                      const SizedBox(height: 16),
+                      DdButton.secondary(
+                        text: 'Validate Word',
+                        onPressed: () {
+                          if (_englishController.text.trim().isNotEmpty) {
+                            context.read<AddWordBloc>().add(
+                                  ValidateEnglishWordEvent(
+                                      _englishController.text.trim()),
+                                );
+                            setState(() => _hasValidated = true);
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 24),
+                      BlocBuilder<AddWordBloc, AddWordState>(
+                        builder: (context, state) {
+                          if (state is AddWordValidating) {
+                            return const Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(16.0),
+                                child: CircularProgressIndicator(),
+                              ),
+                            );
+                          }
 
-                        if (state is AddWordValidated) {
-                          if (!state.isValid) {
+                          if (state is AddWordValidated) {
+                            if (!state.isValid) {
+                              return Column(
+                                children: [
+                                  DdBanner.error(
+                                    'Word not found. You cannot use pronunciation or images for invalid words.',
+                                  ),
+                                  const SizedBox(height: 16),
+                                ],
+                              );
+                            }
+
                             return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                DdBanner.error(
-                                  'Word not found. You cannot use pronunciation or images for invalid words.',
+                                if (state.phonetic != null) ...[
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          'Pronunciation: ${state.phonetic}',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge
+                                              ?.copyWith(
+                                                fontStyle: FontStyle.italic,
+                                              ),
+                                        ),
+                                      ),
+                                      if (state.audioUrl != null)
+                                        IconButton(
+                                          icon: const Icon(Icons.volume_up),
+                                          onPressed: () => _playPronunciation(
+                                              state.audioUrl!),
+                                        )
+                                      else
+                                        IconButton(
+                                          icon: const Icon(Icons.volume_up),
+                                          onPressed: () => _speakWord(
+                                              _englishController.text.trim()),
+                                        ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 16),
+                                ],
+                                DdCheckboxRow(
+                                  label: 'Include pronunciation',
+                                  value: state.includePronunciation,
+                                  enabled: state.isValid &&
+                                      (state.phonetic != null ||
+                                          state.audioUrl != null),
+                                  onChanged: (value) {
+                                    context.read<AddWordBloc>().add(
+                                          TogglePronunciationEvent(
+                                              value ?? false),
+                                        );
+                                  },
                                 ),
-                                const SizedBox(height: 16),
+                                if (state.isValid) ...[
+                                  DdButton.secondary(
+                                    text: state.selectedImageUrl == null
+                                        ? 'Add Image (Optional)'
+                                        : 'Change Image',
+                                    icon: Icons.image_search,
+                                    onPressed: () async {
+                                      final result = await context.push<String>(
+                                        '/unit/${widget.unitId}/search-images',
+                                        extra: _englishController.text.trim(),
+                                      );
+                                      if (result != null) {
+                                        context
+                                            .read<AddWordBloc>()
+                                            .add(SelectImageEvent(result));
+                                      }
+                                    },
+                                  ),
+                                  if (state.selectedImageUrl != null) ...[
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.check_circle,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                          size: 20,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          'Image selected',
+                                          style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                  ],
+                                ],
+                                DdCheckboxRow(
+                                  label: 'Add example sentence',
+                                  value: state.includeExample,
+                                  onChanged: (value) {
+                                    context.read<AddWordBloc>().add(
+                                        ToggleExampleEvent(value ?? false));
+                                  },
+                                ),
+                                if (state.includeExample) ...[
+                                  const SizedBox(height: 8),
+                                  TextFormField(
+                                    controller: _exampleController,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Example Sentence',
+                                      hintText: 'Enter an example sentence',
+                                    ),
+                                    maxLines: 3,
+                                  ),
+                                ],
+                                const SizedBox(height: 24),
                               ],
                             );
                           }
 
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (state.phonetic != null) ...[
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        'Pronunciation: ${state.phonetic}',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyLarge
-                                            ?.copyWith(
-                                              fontStyle: FontStyle.italic,
-                                            ),
-                                      ),
-                                    ),
-                                    if (state.audioUrl != null)
-                                      IconButton(
-                                        icon: const Icon(Icons.volume_up),
-                                        onPressed: () =>
-                                            _playPronunciation(state.audioUrl!),
-                                      )
-                                    else
-                                      IconButton(
-                                        icon: const Icon(Icons.volume_up),
-                                        onPressed: () => _speakWord(
-                                            _englishController.text.trim()),
-                                      ),
-                                  ],
-                                ),
-                                const SizedBox(height: 16),
-                              ],
-                              DdCheckboxRow(
-                                label: 'Include pronunciation',
-                                value: state.includePronunciation,
-                                enabled: state.isValid &&
-                                    (state.phonetic != null ||
-                                        state.audioUrl != null),
-                                onChanged: (value) {
-                                  context.read<AddWordBloc>().add(
-                                        TogglePronunciationEvent(
-                                            value ?? false),
-                                      );
-                                },
-                              ),
-                              if (state.isValid) ...[
-                                DdButton.secondary(
-                                  text: state.selectedImageUrl == null
-                                      ? 'Add Image (Optional)'
-                                      : 'Change Image',
-                                  icon: Icons.image_search,
-                                  onPressed: () async {
-                                    final result = await context.push<String>(
-                                      '/unit/${widget.unitId}/search-images',
-                                      extra: _englishController.text.trim(),
-                                    );
-                                    if (result != null) {
-                                      context
-                                          .read<AddWordBloc>()
-                                          .add(SelectImageEvent(result));
-                                    }
-                                  },
-                                ),
-                                if (state.selectedImageUrl != null) ...[
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.check_circle,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .secondary,
-                                        size: 20,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        'Image selected',
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 8),
-                                ],
-                              ],
-                              DdCheckboxRow(
-                                label: 'Add example sentence',
-                                value: state.includeExample,
-                                onChanged: (value) {
-                                  context
-                                      .read<AddWordBloc>()
-                                      .add(ToggleExampleEvent(value ?? false));
-                                },
-                              ),
-                              if (state.includeExample) ...[
-                                const SizedBox(height: 8),
-                                TextFormField(
-                                  controller: _exampleController,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Example Sentence',
-                                    hintText: 'Enter an example sentence',
-                                  ),
-                                  maxLines: 3,
-                                ),
-                              ],
-                              const SizedBox(height: 24),
-                            ],
-                          );
-                        }
+                          if (_hasValidated && state is AddWordInitial) {
+                            return const SizedBox();
+                          }
 
-                        if (_hasValidated && state is AddWordInitial) {
                           return const SizedBox();
-                        }
-
-                        return const SizedBox();
-                      },
-                    ),
-                    TextFormField(
-                      controller: _uzbekController,
-                      decoration: const InputDecoration(
-                        labelText: 'Uzbek Translation',
-                        hintText: 'Enter the Uzbek translation',
+                        },
                       ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Please enter Uzbek translation';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _descriptionController,
-                      decoration: const InputDecoration(
-                        labelText: 'Description (Optional)',
-                        hintText: 'Add additional notes or context',
+                      TextFormField(
+                        controller: _uzbekController,
+                        decoration: const InputDecoration(
+                          labelText: 'Uzbek Translation',
+                          hintText: 'Enter the Uzbek translation',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please enter Uzbek translation';
+                          }
+                          return null;
+                        },
                       ),
-                      maxLines: 3,
-                    ),
-                    const SizedBox(height: 32),
-                    BlocBuilder<AddWordBloc, AddWordState>(
-                      builder: (context, state) {
-                        return DdButton.primary(
-                          text: 'Save Word',
-                          isLoading: state is AddWordSaving,
-                          onPressed: (state is AddWordValidated &&
-                                  _hasValidated)
-                              ? () {
-                                  if (_formKey.currentState!.validate()) {
-                                    context.read<AddWordBloc>().add(
-                                          SaveWordEvent(
-                                            english:
-                                                _englishController.text.trim(),
-                                            uzbek: _uzbekController.text.trim(),
-                                            example: _exampleController
-                                                    .text.isNotEmpty
-                                                ? _exampleController.text.trim()
-                                                : null,
-                                            description: _descriptionController
-                                                    .text.isNotEmpty
-                                                ? _descriptionController.text
-                                                    .trim()
-                                                : null,
-                                            unitId: widget.unitId,
-                                          ),
-                                        );
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _descriptionController,
+                        decoration: const InputDecoration(
+                          labelText: 'Description (Optional)',
+                          hintText: 'Add additional notes or context',
+                        ),
+                        maxLines: 3,
+                      ),
+                      const SizedBox(height: 32),
+                      BlocBuilder<AddWordBloc, AddWordState>(
+                        builder: (context, state) {
+                          return DdButton.primary(
+                            text: 'Save Word',
+                            isLoading: state is AddWordSaving,
+                            onPressed: (state is AddWordValidated &&
+                                    _hasValidated)
+                                ? () {
+                                    if (_formKey.currentState!.validate()) {
+                                      context.read<AddWordBloc>().add(
+                                            SaveWordEvent(
+                                              english: _englishController.text
+                                                  .trim(),
+                                              uzbek:
+                                                  _uzbekController.text.trim(),
+                                              example: _exampleController
+                                                      .text.isNotEmpty
+                                                  ? _exampleController.text
+                                                      .trim()
+                                                  : null,
+                                              description:
+                                                  _descriptionController
+                                                          .text.isNotEmpty
+                                                      ? _descriptionController
+                                                          .text
+                                                          .trim()
+                                                      : null,
+                                              unitId: widget.unitId,
+                                            ),
+                                          );
+                                    }
                                   }
-                                }
-                              : null,
-                        );
-                      },
-                    ),
-                  ],
+                                : null,
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

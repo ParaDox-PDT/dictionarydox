@@ -1,3 +1,4 @@
+import 'package:dictionarydox/src/core/utils/responsive_utils.dart';
 import 'package:dictionarydox/src/injector_container.dart';
 import 'package:dictionarydox/src/presentation/blocs/unit/unit_bloc.dart';
 import 'package:dictionarydox/src/presentation/blocs/unit/unit_event.dart';
@@ -95,94 +96,44 @@ class HomeView extends StatelessWidget {
               );
             }
 
-            return ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: state.units.length,
-              itemBuilder: (context, index) {
-                final unit = state.units[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12.0),
-                  child: Slidable(
-                    key: ValueKey(unit.id),
-                    endActionPane: ActionPane(
-                      motion: const DrawerMotion(),
-                      children: [
-                        SlidableAction(
-                          onPressed: (context) {
-                            // Show confirmation dialog
-                            showDialog(
-                              context: context,
-                              builder: (dialogContext) => AlertDialog(
-                                title: const Text('Delete Unit'),
-                                content: Text(
-                                    'Are you sure you want to delete "${unit.name}"? All words in this unit will be deleted.'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () =>
-                                        Navigator.pop(dialogContext),
-                                    child: const Text('Cancel'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(dialogContext);
-                                      context.read<UnitBloc>().add(
-                                            DeleteUnitEvent(unit.id),
-                                          );
-                                    },
-                                    style: TextButton.styleFrom(
-                                      foregroundColor: Colors.red,
-                                    ),
-                                    child: const Text('Delete'),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                          backgroundColor: const Color(0xFFFE4A49),
-                          foregroundColor: Colors.white,
-                          icon: Icons.delete,
-                          label: 'Delete',
-                        ),
-                      ],
-                    ),
-                    child: DdCard(
-                      onTap: () async {
-                        await context.push('/unit/${unit.id}', extra: unit);
-                        onRefresh();
-                      },
-                      child: Row(
-                        children: [
-                          if (unit.icon != null)
-                            Text(
-                              unit.icon!,
-                              style: const TextStyle(fontSize: 32),
-                            )
-                          else
-                            const Icon(Icons.folder, size: 32),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  unit.name,
-                                  style: Theme.of(context).textTheme.titleLarge,
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  '${unit.wordCount} words',
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                              ],
-                            ),
-                          ),
-                          const Icon(Icons.chevron_right),
-                        ],
+            return ResponsiveWrapper(
+              child: Builder(
+                builder: (context) {
+                  final padding = ResponsiveUtils.getResponsivePadding(context);
+                  final isDesktop = ResponsiveUtils.isDesktop(context);
+
+                  if (isDesktop) {
+                    // Grid layout for desktop
+                    return GridView.builder(
+                      padding: padding,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: ResponsiveUtils.getGridColumns(context),
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                        childAspectRatio: 3,
                       ),
-                    ),
-                  ),
-                );
-              },
+                      itemCount: state.units.length,
+                      itemBuilder: (context, index) {
+                        final unit = state.units[index];
+                        return _buildUnitCard(context, unit, false);
+                      },
+                    );
+                  }
+
+                  // List layout for mobile/tablet
+                  return ListView.builder(
+                    padding: padding,
+                    itemCount: state.units.length,
+                    itemBuilder: (context, index) {
+                      final unit = state.units[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12.0),
+                        child: _buildUnitCard(context, unit, true),
+                      );
+                    },
+                  );
+                },
+              ),
             );
           }
 
@@ -195,6 +146,99 @@ class HomeView extends StatelessWidget {
           onRefresh();
         },
         child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  Widget _buildUnitCard(BuildContext context, dynamic unit, bool enableSwipe) {
+    final cardContent = DdCard(
+      onTap: () async {
+        await context.push('/unit/${unit.id}', extra: unit);
+        onRefresh();
+      },
+      child: Row(
+        children: [
+          if (unit.icon != null)
+            Text(
+              unit.icon!,
+              style: const TextStyle(fontSize: 32),
+            )
+          else
+            const Icon(Icons.folder, size: 32),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  unit.name,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '${unit.wordCount} words',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            ),
+          ),
+          const Icon(Icons.chevron_right),
+        ],
+      ),
+    );
+
+    if (!enableSwipe) {
+      return InkWell(
+        onLongPress: () => _showDeleteDialog(context, unit),
+        child: cardContent,
+      );
+    }
+
+    return Slidable(
+      key: ValueKey(unit.id),
+      endActionPane: ActionPane(
+        motion: const DrawerMotion(),
+        children: [
+          SlidableAction(
+            onPressed: (context) => _showDeleteDialog(context, unit),
+            backgroundColor: const Color(0xFFFE4A49),
+            foregroundColor: Colors.white,
+            icon: Icons.delete,
+            label: 'Delete',
+          ),
+        ],
+      ),
+      child: cardContent,
+    );
+  }
+
+  void _showDeleteDialog(BuildContext context, dynamic unit) {
+    // Store the bloc reference to avoid deactivated widget error
+    final unitBloc = context.read<UnitBloc>();
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Delete Unit'),
+        content: Text(
+          'Are you sure you want to delete "${unit.name}"? All words in this unit will be deleted.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              unitBloc.add(DeleteUnitEvent(unit.id));
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.red,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
       ),
     );
   }

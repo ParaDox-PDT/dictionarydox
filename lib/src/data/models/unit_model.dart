@@ -43,4 +43,24 @@ class UnitModel extends HiveObject {
       wordCount: unit.wordCount,
     );
   }
+
+  /// Convert to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'icon': icon,
+      'wordCount': wordCount,
+    };
+  }
+
+  /// Create from JSON
+  factory UnitModel.fromJson(Map<String, dynamic> json) {
+    return UnitModel(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      icon: json['icon'] as String?,
+      wordCount: json['wordCount'] as int? ?? 0,
+    );
+  }
 }

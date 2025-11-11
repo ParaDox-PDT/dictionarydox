@@ -73,4 +73,34 @@ class WordModel extends HiveObject {
       description: word.description,
     );
   }
+
+  /// Convert to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'english': english,
+      'uzbek': uzbek,
+      'phonetic': phonetic,
+      'audioUrl': audioUrl,
+      'example': example,
+      'imageUrl': imageUrl,
+      'unitId': unitId,
+      'description': description,
+    };
+  }
+
+  /// Create from JSON
+  factory WordModel.fromJson(Map<String, dynamic> json) {
+    return WordModel(
+      id: json['id'] as String,
+      english: json['english'] as String,
+      uzbek: json['uzbek'] as String,
+      phonetic: json['phonetic'] as String?,
+      audioUrl: json['audioUrl'] as String?,
+      example: json['example'] as String?,
+      imageUrl: json['imageUrl'] as String?,
+      unitId: json['unitId'] as String,
+      description: json['description'] as String?,
+    );
+  }
 }
