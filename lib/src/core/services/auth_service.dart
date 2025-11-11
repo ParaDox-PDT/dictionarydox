@@ -10,13 +10,9 @@ class AuthService {
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-  // Web Client ID from Firebase Console
-  static const String _webClientId =
-      '551056648202-sa56fq00eo9a4els0286vq8tc355trjd.apps.googleusercontent.com';
-
   final GoogleSignIn _googleSignIn = GoogleSignIn(
-    // Use web client ID for web platform
-    clientId: kIsWeb ? _webClientId : null,
+    // Don't specify clientId for web - let Firebase handle it
+    scopes: ['email', 'profile'],
   );
 
   /// Get current user
@@ -35,52 +31,61 @@ class AuthService {
         print('Starting Google Sign-In...');
       }
 
-      GoogleSignInAccount? googleUser;
-
       if (kIsWeb) {
-        // Web: Try silent sign-in first, then fall back to regular sign-in
-        googleUser = await _googleSignIn.signInSilently();
-        googleUser ??= await _googleSignIn.signIn();
-      } else {
-        // Mobile: Use regular sign-in flow
-        googleUser = await _googleSignIn.signIn();
-      }
+        // Web: Use Firebase Auth popup directly
+        final GoogleAuthProvider googleProvider = GoogleAuthProvider();
+        googleProvider.addScope('email');
+        googleProvider.addScope('profile');
 
-      if (googleUser == null) {
-        // User canceled the sign-in
+        final userCredential =
+            await _firebaseAuth.signInWithPopup(googleProvider);
+
         if (kDebugMode) {
-          print('Google Sign-In canceled by user');
+          print('Signed in to Firebase: ${userCredential.user?.email}');
         }
-        return null;
+
+        return userCredential;
+      } else {
+        // Mobile: Use google_sign_in package
+        GoogleSignInAccount? googleUser;
+        googleUser = await _googleSignIn.signIn();
+
+        if (googleUser == null) {
+          // User canceled the sign-in
+          if (kDebugMode) {
+            print('Google Sign-In canceled by user');
+          }
+          return null;
+        }
+
+        if (kDebugMode) {
+          print('Google user: ${googleUser.email}');
+        }
+
+        // Obtain the auth details from the request
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+
+        if (kDebugMode) {
+          print('Got Google auth details');
+        }
+
+        // Create a new credential
+        final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+
+        // Sign in to Firebase with the Google credential
+        final userCredential =
+            await _firebaseAuth.signInWithCredential(credential);
+
+        if (kDebugMode) {
+          print('Signed in to Firebase: ${userCredential.user?.email}');
+        }
+
+        return userCredential;
       }
-
-      if (kDebugMode) {
-        print('Google user: ${googleUser.email}');
-      }
-
-      // Obtain the auth details from the request
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-
-      if (kDebugMode) {
-        print('Got Google auth details');
-      }
-
-      // Create a new credential
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      // Sign in to Firebase with the Google credential
-      final userCredential =
-          await _firebaseAuth.signInWithCredential(credential);
-
-      if (kDebugMode) {
-        print('Signed in to Firebase: ${userCredential.user?.email}');
-      }
-
-      return userCredential;
     } catch (e) {
       if (kDebugMode) {
         print('Error signing in with Google: $e');
@@ -92,10 +97,12 @@ class AuthService {
   /// Sign out
   Future<void> signOut() async {
     try {
-      await Future.wait([
-        _firebaseAuth.signOut(),
-        _googleSignIn.signOut(),
-      ]);
+      await _firebaseAuth.signOut();
+
+      // Only sign out from Google Sign-In on mobile
+      if (!kIsWeb) {
+        await _googleSignIn.signOut();
+      }
 
       if (kDebugMode) {
         print('User signed out');
@@ -114,7 +121,11 @@ class AuthService {
       final user = currentUser;
       if (user != null) {
         await user.delete();
-        await _googleSignIn.signOut();
+        
+        // Only sign out from Google Sign-In on mobile
+        if (!kIsWeb) {
+          await _googleSignIn.signOut();
+        }
 
         if (kDebugMode) {
           print('User account deleted');
