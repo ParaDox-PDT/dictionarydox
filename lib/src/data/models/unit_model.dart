@@ -17,11 +17,15 @@ class UnitModel extends HiveObject {
   @HiveField(3)
   final int wordCount;
 
+  @HiveField(4)
+  final bool isGlobal;
+
   UnitModel({
     required this.id,
     required this.name,
     this.icon,
     this.wordCount = 0,
+    this.isGlobal = false,
   });
 
   /// Convert to domain entity
@@ -31,6 +35,7 @@ class UnitModel extends HiveObject {
       name: name,
       icon: icon,
       wordCount: wordCount,
+      isGlobal: isGlobal,
     );
   }
 
@@ -41,6 +46,7 @@ class UnitModel extends HiveObject {
       name: unit.name,
       icon: unit.icon,
       wordCount: unit.wordCount,
+      isGlobal: unit.isGlobal,
     );
   }
 
@@ -51,6 +57,7 @@ class UnitModel extends HiveObject {
       'name': name,
       'icon': icon,
       'wordCount': wordCount,
+      'isGlobal': isGlobal,
     };
   }
 
@@ -61,6 +68,7 @@ class UnitModel extends HiveObject {
       name: json['name'] as String,
       icon: json['icon'] as String?,
       wordCount: json['wordCount'] as int? ?? 0,
+      isGlobal: json['isGlobal'] as bool? ?? false,
     );
   }
 }

@@ -58,6 +58,13 @@ class DictionaryDoxApp extends StatelessWidget {
         theme: AppTheme.lightTheme,
         themeMode: ThemeMode.light,
         routerConfig: router,
+        builder: (context, child) {
+          return SafeArea(
+            top: false,
+            bottom: true,
+            child: child ?? const SizedBox(),
+          );
+        },
       ),
     );
   }

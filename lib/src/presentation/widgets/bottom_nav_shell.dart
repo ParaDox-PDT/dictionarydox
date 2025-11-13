@@ -1,6 +1,7 @@
 import 'package:dictionarydox/src/core/providers/initialization_provider.dart';
 import 'package:dictionarydox/src/presentation/pages/home_page/home_page.dart';
 import 'package:dictionarydox/src/presentation/pages/profile_page/profile_page.dart';
+import 'package:dictionarydox/src/presentation/pages/units_page/units_page.dart';
 import 'package:flutter/material.dart';
 
 /// Bottom navigation shell with persistent navigation using IndexedStack
@@ -95,6 +96,7 @@ class _BottomNavShellState extends State<BottomNavShell> {
     // Pre-build screens to maintain their state
     const List<Widget> screens = [
       HomePage(),
+      UnitsPage(),
       ProfilePage(),
     ];
 
@@ -118,6 +120,11 @@ class _BottomNavShellState extends State<BottomNavShell> {
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home, color: Colors.blue),
             label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.folder_outlined),
+            selectedIcon: Icon(Icons.folder, color: Colors.blue),
+            label: 'Units',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline),
