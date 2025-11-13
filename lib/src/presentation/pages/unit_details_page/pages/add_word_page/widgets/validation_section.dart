@@ -51,35 +51,40 @@ class ValidationSection extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (state.phonetic != null) ...[
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Pronunciation: ${state.phonetic}',
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              fontStyle: FontStyle.italic,
-                            ),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color:
+                        Theme.of(context).colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.record_voice_over,
+                        color: Theme.of(context).colorScheme.primary,
+                        size: 20,
                       ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.volume_up),
-                      onPressed: onSpeakWord,
-                    ),
-                  ],
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          state.phonetic!,
+                          style:
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    fontFamily: 'monospace',
+                                    letterSpacing: 1.2,
+                                  ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.volume_up),
+                        onPressed: onSpeakWord,
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 16),
               ],
-              DdCheckboxRow(
-                label: 'Include pronunciation',
-                value: state.includePronunciation,
-                enabled: state.isValid &&
-                    (state.phonetic != null || state.audioUrl != null),
-                onChanged: (value) {
-                  context.read<AddWordBloc>().add(
-                        TogglePronunciationEvent(value ?? false),
-                      );
-                },
-              ),
               if (state.isValid) ...[
                 DdButton.secondary(
                   text: state.selectedImageUrl == null
