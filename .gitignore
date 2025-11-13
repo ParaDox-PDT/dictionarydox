@@ -63,3 +63,15 @@ ios/Runner/GoogleService-Info.plist
 .env
 *.env
 !.env.example
+
+# Deployment files (contain sensitive data)
+*.md
+!README.md
+deploy-*.ps1
+deploy-*.sh
+android/
+ios/
+linux/
+macos/
+windows/
+web/
