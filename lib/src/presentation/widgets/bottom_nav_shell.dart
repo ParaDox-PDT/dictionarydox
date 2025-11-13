@@ -20,15 +20,18 @@ class BottomNavShell extends StatelessWidget {
         selectedIndex: currentIndex,
         onDestinationSelected: (index) =>
             _onDestinationSelected(context, index),
+        elevation: 8,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        indicatorColor: Colors.blue.withOpacity(0.2),
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
+            selectedIcon: Icon(Icons.home, color: Colors.blue),
             label: 'Home',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
+            selectedIcon: Icon(Icons.person, color: Colors.blue),
             label: 'Profile',
           ),
         ],

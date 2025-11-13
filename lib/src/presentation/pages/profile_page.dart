@@ -40,65 +40,132 @@ class ProfilePage extends StatelessWidget {
             maxWidth: 600,
             child: CustomScrollView(
               slivers: [
-                // App Bar with gradient
+                // App Bar with gradient and pinned profile
                 SliverAppBar(
                   expandedHeight: 200,
                   pinned: true,
-                  flexibleSpace: FlexibleSpaceBar(
-                    background: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Theme.of(context).primaryColor,
-                            Theme.of(context).primaryColor.withOpacity(0.7),
-                          ],
-                        ),
-                      ),
-                      child: SafeArea(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            // Profile Picture
-                            Container(
-                              margin: const EdgeInsets.only(bottom: 16),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: 4,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.2),
-                                    blurRadius: 15,
-                                    offset: const Offset(0, 5),
-                                  ),
-                                ],
-                              ),
-                              child: CircleAvatar(
-                                radius: 50,
-                                backgroundColor: Colors.white,
-                                backgroundImage: user.photoUrl != null
-                                    ? NetworkImage(user.photoUrl!)
-                                    : null,
-                                child: user.photoUrl == null
-                                    ? Text(
-                                        user.displayName[0].toUpperCase(),
-                                        style: TextStyle(
-                                          fontSize: 40,
-                                          fontWeight: FontWeight.bold,
-                                          color: Theme.of(context).primaryColor,
+                  flexibleSpace: LayoutBuilder(
+                    builder: (context, constraints) {
+                      // Calculate scroll progress
+                      final scrollProgress =
+                          (constraints.maxHeight - kToolbarHeight) /
+                              (200 - kToolbarHeight);
+                      final isCollapsed = scrollProgress < 0.5;
+
+                      return FlexibleSpaceBar(
+                        titlePadding: EdgeInsets.zero,
+                        title: isCollapsed
+                            ? Container(
+                                height: kToolbarHeight,
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                child: Row(
+                                  children: [
+                                    // Small profile picture when collapsed
+                                    CircleAvatar(
+                                      radius: 18,
+                                      backgroundColor: Colors.white,
+                                      backgroundImage: user.photoUrl != null
+                                          ? NetworkImage(user.photoUrl!)
+                                          : null,
+                                      child: user.photoUrl == null
+                                          ? Text(
+                                              user.displayName[0].toUpperCase(),
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                              ),
+                                            )
+                                          : null,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    // Display name when collapsed
+                                    Expanded(
+                                      child: Text(
+                                        user.displayName,
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
                                         ),
-                                      )
-                                    : null,
-                              ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : null,
+                        background: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Theme.of(context).primaryColor,
+                                Theme.of(context).primaryColor.withOpacity(0.7),
+                              ],
                             ),
-                          ],
+                          ),
+                          child: SafeArea(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                // Profile Picture (expanded)
+                                Container(
+                                  margin: const EdgeInsets.only(bottom: 16),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 4,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.2),
+                                        blurRadius: 15,
+                                        offset: const Offset(0, 5),
+                                      ),
+                                    ],
+                                  ),
+                                  child: CircleAvatar(
+                                    radius: 50,
+                                    backgroundColor: Colors.white,
+                                    backgroundImage: user.photoUrl != null
+                                        ? NetworkImage(user.photoUrl!)
+                                        : null,
+                                    child: user.photoUrl == null
+                                        ? Text(
+                                            user.displayName[0].toUpperCase(),
+                                            style: TextStyle(
+                                              fontSize: 40,
+                                              fontWeight: FontWeight.bold,
+                                              color: Theme.of(context)
+                                                  .primaryColor,
+                                            ),
+                                          )
+                                        : null,
+                                  ),
+                                ),
+                                // Display Name (expanded)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 16),
+                                  child: Text(
+                                    user.displayName,
+                                    style: const TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
                   ),
                 ),
 
@@ -108,30 +175,6 @@ class ProfilePage extends StatelessWidget {
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
                       const SizedBox(height: 24),
-
-                      // Display Name
-                      Center(
-                        child: Text(
-                          user.displayName,
-                          style: const TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-
-                      // Email
-                      Center(
-                        child: Text(
-                          user.email,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 32),
 
                       // Info Card
                       Card(
