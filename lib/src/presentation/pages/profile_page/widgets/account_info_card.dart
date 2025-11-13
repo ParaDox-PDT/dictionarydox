@@ -34,13 +34,21 @@ class AccountInfoCard extends StatelessWidget {
               label: 'Display Name',
               value: user.displayName,
             ),
-            const Divider(height: 24),
+            Divider(
+              height: 24,
+              color: Colors.grey[200],
+              thickness: 1,
+            ),
             _InfoRow(
               icon: Icons.email,
               label: 'Email',
               value: user.email,
             ),
-            const Divider(height: 24),
+            Divider(
+              height: 24,
+              color: Colors.grey[200],
+              thickness: 1,
+            ),
             _InfoRow(
               icon: Icons.calendar_today,
               label: 'Member Since',

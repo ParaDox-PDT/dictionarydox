@@ -7,6 +7,7 @@ class SettingsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 2,
+      clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
@@ -22,7 +23,11 @@ class SettingsCard extends StatelessWidget {
               );
             },
           ),
-          const Divider(height: 1),
+          Divider(
+            height: 1,
+            thickness: 1,
+            color: Colors.grey[200],
+          ),
           _SettingsTile(
             icon: Icons.notifications,
             title: 'Notifications',
