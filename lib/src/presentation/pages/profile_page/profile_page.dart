@@ -1,8 +1,6 @@
-import 'package:dictionarydox/src/core/services/auth_service.dart';
-import 'package:dictionarydox/src/core/services/user_service.dart';
 import 'package:dictionarydox/src/core/utils/responsive_utils.dart';
 import 'package:dictionarydox/src/data/models/user_model.dart';
-import 'package:dictionarydox/src/injector_container.dart';
+import 'package:dictionarydox/src/presentation/pages/profile_page/mixin/profile_mixin.dart';
 import 'package:dictionarydox/src/presentation/pages/profile_page/widgets/account_info_card.dart';
 import 'package:dictionarydox/src/presentation/pages/profile_page/widgets/profile_actions.dart';
 import 'package:dictionarydox/src/presentation/pages/profile_page/widgets/profile_app_bar.dart';
@@ -10,15 +8,16 @@ import 'package:dictionarydox/src/presentation/pages/profile_page/widgets/profil
 import 'package:dictionarydox/src/presentation/pages/profile_page/widgets/settings_card.dart';
 import 'package:flutter/material.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final authService = sl<AuthService>();
-    final userService = sl<UserService>();
-    final userId = authService.uid;
+  State<ProfilePage> createState() => _ProfilePageState();
+}
 
+class _ProfilePageState extends State<ProfilePage> with ProfileMixin {
+  @override
+  Widget build(BuildContext context) {
     if (userId == null) {
       return const Scaffold(
         body: Center(
@@ -29,7 +28,7 @@ class ProfilePage extends StatelessWidget {
 
     return Scaffold(
       body: StreamBuilder<UserModel?>(
-        stream: userService.getUserStream(userId),
+        stream: userService.getUserStream(userId!),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const ProfileSkeletonLoader();
@@ -54,7 +53,10 @@ class ProfilePage extends StatelessWidget {
                       const SizedBox(height: 24),
                       const SettingsCard(),
                       const SizedBox(height: 24),
-                      const ProfileActions(),
+                      ProfileActions(
+                        onLogout: () => handleLogout(context),
+                        onDeleteAccount: () => handleDeleteAccount(context),
+                      ),
                       const SizedBox(height: 32),
                       Center(
                         child: Text(
