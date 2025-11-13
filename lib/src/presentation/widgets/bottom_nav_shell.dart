@@ -1,5 +1,5 @@
 import 'package:dictionarydox/src/presentation/pages/home_page.dart';
-import 'package:dictionarydox/src/presentation/pages/profile_page.dart';
+import 'package:dictionarydox/src/presentation/pages/profile_page/profile_page.dart';
 import 'package:flutter/material.dart';
 
 /// Bottom navigation shell with persistent navigation using IndexedStack
