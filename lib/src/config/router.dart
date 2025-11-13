@@ -3,10 +3,8 @@ import 'package:dictionarydox/src/domain/entities/unit.dart';
 import 'package:dictionarydox/src/presentation/blocs/quiz/quiz_event.dart';
 import 'package:dictionarydox/src/presentation/pages/add_word_page.dart';
 import 'package:dictionarydox/src/presentation/pages/create_unit_page.dart';
-import 'package:dictionarydox/src/presentation/pages/home_page.dart';
 import 'package:dictionarydox/src/presentation/pages/image_search_page.dart';
 import 'package:dictionarydox/src/presentation/pages/login_page.dart';
-import 'package:dictionarydox/src/presentation/pages/profile_page.dart';
 import 'package:dictionarydox/src/presentation/pages/quiz_page.dart';
 import 'package:dictionarydox/src/presentation/pages/quiz_type_selector_page.dart';
 import 'package:dictionarydox/src/presentation/pages/splash_screen.dart';
@@ -49,27 +47,10 @@ final router = GoRouter(
       builder: (context, state) => const LoginPage(),
     ),
 
-    // Main Shell with Bottom Navigation
-    ShellRoute(
-      builder: (context, state, child) {
-        final location = state.matchedLocation;
-        final currentIndex = location == '/profile' ? 1 : 0;
-
-        return BottomNavShell(
-          currentIndex: currentIndex,
-          child: child,
-        );
-      },
-      routes: [
-        GoRoute(
-          path: '/',
-          builder: (context, state) => const HomePage(),
-        ),
-        GoRoute(
-          path: '/profile',
-          builder: (context, state) => const ProfilePage(),
-        ),
-      ],
+    // Main route with Bottom Navigation
+    GoRoute(
+      path: '/',
+      builder: (context, state) => const BottomNavShell(),
     ),
 
     // Routes without bottom navigation

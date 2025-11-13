@@ -1,25 +1,38 @@
+import 'package:dictionarydox/src/presentation/pages/home_page.dart';
+import 'package:dictionarydox/src/presentation/pages/profile_page.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
-/// Bottom navigation shell with persistent navigation bar
-class BottomNavShell extends StatelessWidget {
-  final Widget child;
-  final int currentIndex;
+/// Bottom navigation shell with persistent navigation using IndexedStack
+class BottomNavShell extends StatefulWidget {
+  const BottomNavShell({super.key});
 
-  const BottomNavShell({
-    super.key,
-    required this.child,
-    required this.currentIndex,
-  });
+  @override
+  State<BottomNavShell> createState() => _BottomNavShellState();
+}
+
+class _BottomNavShellState extends State<BottomNavShell> {
+  int _currentIndex = 0;
+
+  // Pre-build screens to maintain their state
+  final List<Widget> _screens = const [
+    HomePage(),
+    ProfilePage(),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: child,
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _screens,
+      ),
       bottomNavigationBar: NavigationBar(
-        selectedIndex: currentIndex,
-        onDestinationSelected: (index) =>
-            _onDestinationSelected(context, index),
+        selectedIndex: _currentIndex,
+        onDestinationSelected: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
         elevation: 8,
         backgroundColor: Theme.of(context).colorScheme.surface,
         indicatorColor: Colors.blue.withOpacity(0.2),
@@ -37,16 +50,5 @@ class BottomNavShell extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  void _onDestinationSelected(BuildContext context, int index) {
-    switch (index) {
-      case 0:
-        context.go('/');
-        break;
-      case 1:
-        context.go('/profile');
-        break;
-    }
   }
 }
