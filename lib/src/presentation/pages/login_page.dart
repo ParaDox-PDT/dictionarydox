@@ -1,3 +1,4 @@
+import 'package:dictionarydox/src/core/providers/initialization_provider.dart';
 import 'package:dictionarydox/src/core/utils/responsive_utils.dart';
 import 'package:dictionarydox/src/injector_container.dart';
 import 'package:dictionarydox/src/presentation/blocs/auth/auth_bloc.dart';
@@ -12,9 +13,53 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => sl<AuthBloc>(),
-      child: const LoginView(),
+    // Wait for initialization before creating AuthBloc
+    return FutureBuilder(
+      future: InitializationProvider.of(context).initialization,
+      builder: (context, snapshot) {
+        // Show loading while initializing
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        // Show error if initialization failed
+        if (snapshot.hasError) {
+          return Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.error_outline,
+                    color: Colors.red,
+                    size: 60,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Failed to initialize app',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Error: ${snapshot.error}',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        // Initialization complete - show login page
+        return BlocProvider(
+          create: (context) => sl<AuthBloc>(),
+          child: const LoginView(),
+        );
+      },
     );
   }
 }

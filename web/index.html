@@ -76,7 +76,7 @@
 <body>
   <div class="loading" id="loading">
     <div class="spinner"></div>
-    <div class="loading-text">Loading DictionaryDox...</div>
+    <div class="loading-text">Loading...</div>
   </div>
   
   <script>
@@ -87,18 +87,21 @@
       }
     });
     
-    // Register service worker for Firebase Cloud Messaging
+    // Register service worker for Firebase Cloud Messaging (non-blocking)
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('firebase-messaging-sw.js')
-        .then((registration) => {
-          console.log('Service Worker registered:', registration);
-        })
-        .catch((error) => {
-          console.log('Service Worker registration failed:', error);
-        });
+      // Use setTimeout to prevent blocking the main thread
+      setTimeout(() => {
+        navigator.serviceWorker.register('firebase-messaging-sw.js')
+          .then((registration) => {
+            console.log('Service Worker registered:', registration);
+          })
+          .catch((error) => {
+            console.log('Service Worker registration failed:', error);
+          });
+      }, 100);
     }
   </script>
   
-  <script src="flutter_bootstrap.js" async></script>
+  <script src="flutter_bootstrap.js" async defer></script>
 </body>
 </html>

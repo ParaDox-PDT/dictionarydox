@@ -38,7 +38,11 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 final sl = GetIt.instance;
 
+bool _isInitialized = false;
+
 Future<void> initDependencies() async {
+  if (_isInitialized) return;
+
   // Initialize storage based on platform
   late StorageService wordStorage;
   late StorageService unitStorage;
@@ -58,9 +62,12 @@ Future<void> initDependencies() async {
     );
   } else {
     // Mobile/Desktop storage using Hive
-    await Hive.initFlutter();
-    Hive.registerAdapter(WordModelAdapter());
-    Hive.registerAdapter(UnitModelAdapter());
+    // Initialize Hive only once
+    if (!Hive.isBoxOpen('words')) {
+      await Hive.initFlutter();
+      Hive.registerAdapter(WordModelAdapter());
+      Hive.registerAdapter(UnitModelAdapter());
+    }
 
     wordStorage = HiveStorageService<WordModel>('words');
     unitStorage = HiveStorageService<UnitModel>('units');
@@ -157,4 +164,6 @@ Future<void> initDependencies() async {
       ));
 
   sl.registerFactory(() => QuizBloc(getUnitWords: sl()));
+
+  _isInitialized = true;
 }

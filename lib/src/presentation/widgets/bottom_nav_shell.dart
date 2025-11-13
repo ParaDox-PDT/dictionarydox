@@ -1,3 +1,4 @@
+import 'package:dictionarydox/src/core/providers/initialization_provider.dart';
 import 'package:dictionarydox/src/presentation/pages/home_page.dart';
 import 'package:dictionarydox/src/presentation/pages/profile_page/profile_page.dart';
 import 'package:flutter/material.dart';
@@ -13,18 +14,94 @@ class BottomNavShell extends StatefulWidget {
 class _BottomNavShellState extends State<BottomNavShell> {
   int _currentIndex = 0;
 
-  // Pre-build screens to maintain their state
-  final List<Widget> _screens = const [
-    HomePage(),
-    ProfilePage(),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    // Wait for initialization before building screens
+    return FutureBuilder(
+      future: InitializationProvider.of(context).initialization,
+      builder: (context, snapshot) {
+        // Show loading while initializing
+        if (snapshot.connectionState != ConnectionState.done) {
+          return Scaffold(
+            body: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Theme.of(context).primaryColor,
+                    Theme.of(context).primaryColor.withOpacity(0.7),
+                  ],
+                ),
+              ),
+              child: const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(
+                      color: Colors.white,
+                    ),
+                    SizedBox(height: 24),
+                    Text(
+                      'Loading DictionaryDox...',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+
+        // Show error if initialization failed
+        if (snapshot.hasError) {
+          return Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.error_outline,
+                    color: Colors.red,
+                    size: 60,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Failed to initialize app',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Error: ${snapshot.error}',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        // Initialization complete - build normal navigation
+        return _buildNavigation();
+      },
+    );
+  }
+
+  Widget _buildNavigation() {
+    // Pre-build screens to maintain their state
+    const List<Widget> screens = [
+      HomePage(),
+      ProfilePage(),
+    ];
+
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
-        children: _screens,
+        children: screens,
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
