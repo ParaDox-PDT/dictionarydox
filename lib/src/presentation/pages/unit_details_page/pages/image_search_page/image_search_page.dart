@@ -37,7 +37,7 @@ class ImageSearchView extends StatelessWidget {
       body: BlocBuilder<ImageSearchBloc, ImageSearchState>(
         builder: (context, state) {
           if (state is ImageSearchLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const LoadingGridView();
           }
 
           if (state is ImageSearchError) {
