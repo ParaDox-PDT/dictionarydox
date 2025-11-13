@@ -27,7 +27,7 @@ class TranslationFields extends StatelessWidget {
             return null;
           },
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 24),
         TextFormField(
           controller: descriptionController,
           decoration: const InputDecoration(
