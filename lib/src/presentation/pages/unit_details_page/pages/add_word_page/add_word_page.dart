@@ -65,6 +65,7 @@ class _AddWordPageState extends State<AddWordPage> with AddWordMixin {
                         builder: (context, state) {
                           return ValidationSection(
                             unitId: widget.unitId,
+                            englishWord: englishController.text.trim(),
                             hasValidated: hasValidated,
                             onPlayPronunciation: () {
                               if (state is AddWordValidated &&

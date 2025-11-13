@@ -5,6 +5,7 @@ import 'package:dictionarydox/src/presentation/blocs/image_search/image_search_s
 import 'package:dictionarydox/src/presentation/pages/unit_details_page/pages/image_search_page/widgets/confirm_button.dart';
 import 'package:dictionarydox/src/presentation/pages/unit_details_page/pages/image_search_page/widgets/error_view.dart';
 import 'package:dictionarydox/src/presentation/pages/unit_details_page/pages/image_search_page/widgets/image_grid_view.dart';
+import 'package:dictionarydox/src/presentation/pages/unit_details_page/pages/image_search_page/widgets/loading_grid_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

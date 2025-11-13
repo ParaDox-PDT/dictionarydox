@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 
 class ValidationSection extends StatelessWidget {
   final String unitId;
+  final String englishWord;
   final bool hasValidated;
   final VoidCallback onPlayPronunciation;
   final VoidCallback onSpeakWord;
@@ -17,6 +18,7 @@ class ValidationSection extends StatelessWidget {
   const ValidationSection({
     super.key,
     required this.unitId,
+    required this.englishWord,
     required this.hasValidated,
     required this.onPlayPronunciation,
     required this.onSpeakWord,
@@ -141,7 +143,7 @@ class ValidationSection extends StatelessWidget {
   ) async {
     final result = await context.push<String>(
       '/unit/$unitId/search-images',
-      extra: state.phonetic ?? '',
+      extra: englishWord,
     );
     if (result != null && context.mounted) {
       context.read<AddWordBloc>().add(SelectImageEvent(result));
