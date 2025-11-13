@@ -57,8 +57,21 @@
     Cache-Control = "public, max-age=31536000, immutable"
 
 # Disable secrets scanning
-[build.processing]
-  skip_processing = false
-
 [build.processing.secrets]
   enabled = false
+  excluded_paths = [
+    "lib/**/*",
+    ".env",
+    ".env.example", 
+    "*.md",
+    ".dart_tool/**/*",
+    "build/**/*",
+    "web/**/*",
+    "android/**/*",
+    "ios/**/*",
+    "linux/**/*",
+    "macos/**/*",
+    "windows/**/*",
+    "*.ps1",
+    "*.sh"
+  ]
