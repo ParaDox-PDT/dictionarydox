@@ -1,5 +1,6 @@
 import 'package:dictionarydox/src/core/network/dio_client.dart';
 import 'package:dictionarydox/src/core/services/auth_service.dart';
+import 'package:dictionarydox/src/core/services/user_service.dart';
 import 'package:dictionarydox/src/core/storage/hive_storage_service.dart';
 import 'package:dictionarydox/src/core/storage/storage_service.dart';
 import 'package:dictionarydox/src/core/storage/web_storage_service.dart';
@@ -81,6 +82,7 @@ Future<void> initDependencies() async {
 
   // Core Services
   sl.registerLazySingleton<AuthService>(() => AuthService());
+  sl.registerLazySingleton<UserService>(() => UserService());
   sl.registerLazySingleton<DioClient>(() => DioClient());
   sl.registerLazySingleton<Dio>(() => sl<DioClient>().instance);
 

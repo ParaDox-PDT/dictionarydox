@@ -1,3 +1,5 @@
+import 'package:dictionarydox/src/core/services/user_service.dart';
+import 'package:dictionarydox/src/data/models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -9,6 +11,7 @@ class AuthService {
   AuthService._internal();
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final UserService _userService = UserService();
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     // Don't specify clientId for web - let Firebase handle it
@@ -31,20 +34,19 @@ class AuthService {
         print('Starting Google Sign-In...');
       }
 
+      UserCredential? userCredential;
+
       if (kIsWeb) {
         // Web: Use Firebase Auth popup directly
         final GoogleAuthProvider googleProvider = GoogleAuthProvider();
         googleProvider.addScope('email');
         googleProvider.addScope('profile');
 
-        final userCredential =
-            await _firebaseAuth.signInWithPopup(googleProvider);
+        userCredential = await _firebaseAuth.signInWithPopup(googleProvider);
 
         if (kDebugMode) {
           print('Signed in to Firebase: ${userCredential.user?.email}');
         }
-
-        return userCredential;
       } else {
         // Mobile: Use google_sign_in package
         GoogleSignInAccount? googleUser;
@@ -77,15 +79,31 @@ class AuthService {
         );
 
         // Sign in to Firebase with the Google credential
-        final userCredential =
-            await _firebaseAuth.signInWithCredential(credential);
+        userCredential = await _firebaseAuth.signInWithCredential(credential);
 
         if (kDebugMode) {
           print('Signed in to Firebase: ${userCredential.user?.email}');
         }
-
-        return userCredential;
       }
+
+      // Save user to Firestore
+      if (userCredential.user != null) {
+        final user = userCredential.user!;
+        final userModel = UserModel.fromFirebaseUser(
+          uid: user.uid,
+          email: user.email ?? '',
+          displayName: user.displayName,
+          photoUrl: user.photoURL,
+        );
+
+        await _userService.createOrUpdateUser(userModel);
+
+        if (kDebugMode) {
+          print('User data saved to Firestore');
+        }
+      }
+
+      return userCredential;
     } catch (e) {
       if (kDebugMode) {
         print('Error signing in with Google: $e');
@@ -120,6 +138,10 @@ class AuthService {
     try {
       final user = currentUser;
       if (user != null) {
+        // Delete user from Firestore first
+        await _userService.deleteUser(user.uid);
+
+        // Then delete Firebase Auth account
         await user.delete();
 
         // Only sign out from Google Sign-In on mobile
