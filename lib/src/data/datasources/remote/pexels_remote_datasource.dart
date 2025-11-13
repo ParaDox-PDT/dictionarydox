@@ -1,5 +1,6 @@
 import 'package:dictionarydox/src/core/error/exceptions.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 abstract class PexelsRemoteDataSource {
   Future<List<String>> searchImages(String query);
@@ -8,8 +9,8 @@ abstract class PexelsRemoteDataSource {
 class PexelsRemoteDataSourceImpl implements PexelsRemoteDataSource {
   final Dio dio;
   static const String baseUrl = 'https://api.pexels.com/v1';
-  static const String apiKey =
-      '2RXRA3lTBDPTwfTWcoKbMnxD7ZXXJAjsue6g4vTvgrdPpaewwAu27GzL'; // User should replace this
+
+  String get apiKey => dotenv.env['PEXELS_API_KEY'] ?? '';
 
   PexelsRemoteDataSourceImpl(this.dio);
 

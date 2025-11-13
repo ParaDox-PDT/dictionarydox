@@ -89,19 +89,30 @@ lib/
    cd dictionarydox
    ```
 
-2. Install dependencies:
+2. **Configure Environment Variables** (IMPORTANT!)
+   
+   See detailed setup guide: [ENVIRONMENT_SETUP.md](ENVIRONMENT_SETUP.md)
+   
+   Quick start:
+   ```bash
+   # Copy example file
+   cp .env.example .env
+   
+   # Copy web Firebase config
+   cp web/firebase-messaging-sw.js.example web/firebase-messaging-sw.js
+   ```
+   
+   Then edit `.env` and `web/firebase-messaging-sw.js` with your Firebase credentials.
+
+3. Install dependencies:
    ```bash
    flutter pub get
    ```
 
-3. Generate Hive adapters (for mobile):
+4. Generate Hive adapters (for mobile):
    ```bash
    flutter pub run build_runner build --delete-conflicting-outputs
    ```
-
-4. Configure API keys:
-   - Open `lib/src/data/datasources/remote/pexels_remote_datasource.dart`
-   - Replace `YOUR_PEXELS_API_KEY` with your Pexels API key from https://www.pexels.com/api/
 
 5. Run the app:
    ```bash

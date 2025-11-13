@@ -3,6 +3,7 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -40,51 +41,51 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyD8w-aOnHXDgPQ1u5DkgAh26BRUxBu5RmM',
-    appId: '1:551056648202:web:e385fce0105249225117f3',
-    messagingSenderId: '551056648202',
-    projectId: 'dictionarydox',
-    authDomain: 'dictionarydox.firebaseapp.com',
-    storageBucket: 'dictionarydox.appspot.com',
-    measurementId: 'G-NTCTYCF50F',
-  );
+  static FirebaseOptions get web => FirebaseOptions(
+        apiKey: dotenv.env['FIREBASE_WEB_API_KEY']!,
+        appId: dotenv.env['FIREBASE_WEB_APP_ID']!,
+        messagingSenderId: dotenv.env['FIREBASE_WEB_MESSAGING_SENDER_ID']!,
+        projectId: dotenv.env['FIREBASE_WEB_PROJECT_ID']!,
+        authDomain: dotenv.env['FIREBASE_WEB_AUTH_DOMAIN']!,
+        storageBucket: dotenv.env['FIREBASE_WEB_STORAGE_BUCKET']!,
+        measurementId: dotenv.env['FIREBASE_WEB_MEASUREMENT_ID']!,
+      );
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDYwZo94GLUatXvwk6GbEK0R-eJwuZaEgk',
-    appId: '1:551056648202:android:3703ca3c8a0b8ea15117f3',
-    messagingSenderId: '551056648202',
-    projectId: 'dictionarydox',
-    storageBucket: 'dictionarydox.appspot.com',
-  );
+  static FirebaseOptions get android => FirebaseOptions(
+        apiKey: dotenv.env['FIREBASE_ANDROID_API_KEY']!,
+        appId: dotenv.env['FIREBASE_ANDROID_APP_ID']!,
+        messagingSenderId: dotenv.env['FIREBASE_ANDROID_MESSAGING_SENDER_ID']!,
+        projectId: dotenv.env['FIREBASE_ANDROID_PROJECT_ID']!,
+        storageBucket: dotenv.env['FIREBASE_ANDROID_STORAGE_BUCKET']!,
+      );
 
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAArOKlLxTMj5JSKkSQiW9LRIaQ06n6UTU',
-    appId: '1:551056648202:ios:d9a777d318e942655117f3',
-    messagingSenderId: '551056648202',
-    projectId: 'dictionarydox',
-    storageBucket: 'dictionarydox.appspot.com',
-    iosClientId: '551056648202-sa56fq00eo9a4els0286vq8tc355trjd.apps.googleusercontent.com',
-    iosBundleId: 'app.dicitionarydox.uz',
-  );
+  static FirebaseOptions get ios => FirebaseOptions(
+        apiKey: dotenv.env['FIREBASE_IOS_API_KEY']!,
+        appId: dotenv.env['FIREBASE_IOS_APP_ID']!,
+        messagingSenderId: dotenv.env['FIREBASE_IOS_MESSAGING_SENDER_ID']!,
+        projectId: dotenv.env['FIREBASE_IOS_PROJECT_ID']!,
+        storageBucket: dotenv.env['FIREBASE_IOS_STORAGE_BUCKET']!,
+        iosClientId: dotenv.env['FIREBASE_IOS_CLIENT_ID']!,
+        iosBundleId: dotenv.env['FIREBASE_IOS_BUNDLE_ID']!,
+      );
 
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyAArOKlLxTMj5JSKkSQiW9LRIaQ06n6UTU',
-    appId: '1:551056648202:ios:3b0342bc661fbc785117f3',
-    messagingSenderId: '551056648202',
-    projectId: 'dictionarydox',
-    storageBucket: 'dictionarydox.appspot.com',
-    iosClientId: '551056648202-5su31eja3bjqlrt08rliri1201tm0qtq.apps.googleusercontent.com',
-    iosBundleId: 'com.example.dictionarydox',
-  );
+  static FirebaseOptions get macos => FirebaseOptions(
+        apiKey: dotenv.env['FIREBASE_MACOS_API_KEY']!,
+        appId: dotenv.env['FIREBASE_MACOS_APP_ID']!,
+        messagingSenderId: dotenv.env['FIREBASE_MACOS_MESSAGING_SENDER_ID']!,
+        projectId: dotenv.env['FIREBASE_MACOS_PROJECT_ID']!,
+        storageBucket: dotenv.env['FIREBASE_MACOS_STORAGE_BUCKET']!,
+        iosClientId: dotenv.env['FIREBASE_MACOS_CLIENT_ID']!,
+        iosBundleId: dotenv.env['FIREBASE_MACOS_BUNDLE_ID']!,
+      );
 
-  static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyD8w-aOnHXDgPQ1u5DkgAh26BRUxBu5RmM',
-    appId: '1:551056648202:web:a9e05ccfa50f3b205117f3',
-    messagingSenderId: '551056648202',
-    projectId: 'dictionarydox',
-    authDomain: 'dictionarydox.firebaseapp.com',
-    storageBucket: 'dictionarydox.appspot.com',
-    measurementId: 'G-ZMJQFRKJ57',
-  );
+  static FirebaseOptions get windows => FirebaseOptions(
+        apiKey: dotenv.env['FIREBASE_WINDOWS_API_KEY']!,
+        appId: dotenv.env['FIREBASE_WINDOWS_APP_ID']!,
+        messagingSenderId: dotenv.env['FIREBASE_WINDOWS_MESSAGING_SENDER_ID']!,
+        projectId: dotenv.env['FIREBASE_WINDOWS_PROJECT_ID']!,
+        authDomain: dotenv.env['FIREBASE_WINDOWS_AUTH_DOMAIN']!,
+        storageBucket: dotenv.env['FIREBASE_WINDOWS_STORAGE_BUCKET']!,
+        measurementId: dotenv.env['FIREBASE_WINDOWS_MEASUREMENT_ID']!,
+      );
 }

@@ -55,3 +55,9 @@ coverage/
 firebase.json
 .firebase/
 .firebaserc
+web/firebase-messaging-sw.js
+
+# Environment variables
+.env
+*.env
+!.env.example
