@@ -2,7 +2,7 @@ import 'package:dictionarydox/src/core/services/auth_service.dart';
 import 'package:dictionarydox/src/domain/entities/unit.dart';
 import 'package:dictionarydox/src/presentation/blocs/quiz/quiz_event.dart';
 import 'package:dictionarydox/src/presentation/pages/add_word_page.dart';
-import 'package:dictionarydox/src/presentation/pages/create_unit_page.dart';
+import 'package:dictionarydox/src/presentation/pages/home_page/pages/create_unit_page/create_unit_page.dart';
 import 'package:dictionarydox/src/presentation/pages/image_search_page.dart';
 import 'package:dictionarydox/src/presentation/pages/login_page.dart';
 import 'package:dictionarydox/src/presentation/pages/quiz_page.dart';
