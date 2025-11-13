@@ -15,25 +15,27 @@ class IconSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
           'Choose an Icon (Optional)',
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 16),
-        Wrap(
-          spacing: 12,
-          runSpacing: 12,
-          alignment: WrapAlignment.center,
-          children: icons.map((icon) {
-            final isSelected = selectedIcon == icon;
-            return _IconButton(
-              icon: icon,
-              isSelected: isSelected,
-              onTap: () => onIconSelected(isSelected ? null : icon),
-            );
-          }).toList(),
+        Center(
+          child: Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            alignment: WrapAlignment.center,
+            children: icons.map((icon) {
+              final isSelected = selectedIcon == icon;
+              return _IconButton(
+                icon: icon,
+                isSelected: isSelected,
+                onTap: () => onIconSelected(isSelected ? null : icon),
+              );
+            }).toList(),
+          ),
         ),
       ],
     );
