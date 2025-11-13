@@ -71,7 +71,6 @@ class ValidationSection extends StatelessWidget {
                           state.phonetic!,
                           style:
                               Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    fontFamily: 'monospace',
                                     letterSpacing: 1.2,
                                   ),
                         ),
