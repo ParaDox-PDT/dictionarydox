@@ -65,13 +65,9 @@ ios/Runner/GoogleService-Info.plist
 !.env.example
 
 # Deployment files (contain sensitive data)
-*.md
-!README.md
+# Note: Platform folders are available in 'platform-files' branch
+# Only exclude deployment scripts and docs from main branch
 deploy-*.ps1
 deploy-*.sh
-android/
-ios/
-linux/
-macos/
-windows/
-web/
+*.md
+!README.md
