@@ -79,6 +79,7 @@ class _AddWordPageState extends State<AddWordPage> with AddWordMixin {
                         },
                       ),
                       ExampleSentenceField(controller: exampleController),
+                      const SizedBox(height: 24),
                       TranslationFields(
                         uzbekController: uzbekController,
                         descriptionController: descriptionController,
