@@ -67,12 +67,6 @@ class _AddWordPageState extends State<AddWordPage> with AddWordMixin {
                             unitId: widget.unitId,
                             englishWord: englishController.text.trim(),
                             hasValidated: hasValidated,
-                            onPlayPronunciation: () {
-                              if (state is AddWordValidated &&
-                                  state.audioUrl != null) {
-                                playPronunciation(state.audioUrl!);
-                              }
-                            },
                             onSpeakWord: () =>
                                 speakWord(englishController.text.trim()),
                           );

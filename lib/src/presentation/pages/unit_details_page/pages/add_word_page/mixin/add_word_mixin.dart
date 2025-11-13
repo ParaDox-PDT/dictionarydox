@@ -1,4 +1,3 @@
-import 'package:audioplayers/audioplayers.dart';
 import 'package:dictionarydox/src/presentation/blocs/add_word/add_word_bloc.dart';
 import 'package:dictionarydox/src/presentation/blocs/add_word/add_word_event.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +11,6 @@ mixin AddWordMixin<T extends StatefulWidget> on State<T> {
 
   final exampleController = TextEditingController();
   final descriptionController = TextEditingController();
-  final audioPlayer = AudioPlayer();
   final flutterTts = FlutterTts();
 
   bool hasValidated = false;
@@ -29,7 +27,6 @@ mixin AddWordMixin<T extends StatefulWidget> on State<T> {
     uzbekController.dispose();
     exampleController.dispose();
     descriptionController.dispose();
-    audioPlayer.dispose();
     flutterTts.stop();
     super.dispose();
   }
@@ -40,14 +37,6 @@ mixin AddWordMixin<T extends StatefulWidget> on State<T> {
             ValidateEnglishWordEvent(englishController.text.trim()),
           );
       setState(() => hasValidated = true);
-    }
-  }
-
-  Future<void> playPronunciation(String audioUrl) async {
-    try {
-      await audioPlayer.play(UrlSource(audioUrl));
-    } catch (e) {
-      speakWord(englishController.text.trim());
     }
   }
 

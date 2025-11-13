@@ -12,7 +12,6 @@ class ValidationSection extends StatelessWidget {
   final String unitId;
   final String englishWord;
   final bool hasValidated;
-  final VoidCallback onPlayPronunciation;
   final VoidCallback onSpeakWord;
 
   const ValidationSection({
@@ -20,7 +19,6 @@ class ValidationSection extends StatelessWidget {
     required this.unitId,
     required this.englishWord,
     required this.hasValidated,
-    required this.onPlayPronunciation,
     required this.onSpeakWord,
   });
 
@@ -65,9 +63,7 @@ class ValidationSection extends StatelessWidget {
                     ),
                     IconButton(
                       icon: const Icon(Icons.volume_up),
-                      onPressed: state.audioUrl != null
-                          ? onPlayPronunciation
-                          : onSpeakWord,
+                      onPressed: onSpeakWord,
                     ),
                   ],
                 ),
