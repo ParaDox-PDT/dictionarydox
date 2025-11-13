@@ -21,7 +21,7 @@
     
     # Build the app
     flutter pub get
-    flutter build web --release --web-renderer canvaskit
+    flutter build web --release
   """
 
 # Redirect rules for Flutter web routing
