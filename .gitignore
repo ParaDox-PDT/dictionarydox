@@ -56,6 +56,8 @@ firebase.json
 .firebase/
 .firebaserc
 web/firebase-messaging-sw.js
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
 
 # Environment variables
 .env

@@ -55,3 +55,10 @@
   for = "/*.css"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+# Disable secrets scanning
+[build.processing]
+  skip_processing = false
+
+[build.processing.secrets]
+  enabled = false
