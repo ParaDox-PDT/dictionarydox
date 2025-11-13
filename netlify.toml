@@ -2,6 +2,9 @@
 [build]
   publish = "build/web"
   command = """
+    # Disable secrets scanning
+    export SECRETS_SCAN_ENABLED=false
+    
     # Create .env file from environment variables
     echo "FIREBASE_WEB_API_KEY=$FIREBASE_WEB_API_KEY" > .env
     echo "FIREBASE_WEB_APP_ID=$FIREBASE_WEB_APP_ID" >> .env
@@ -55,23 +58,3 @@
   for = "/*.css"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
-
-# Disable secrets scanning
-[build.processing.secrets]
-  enabled = false
-  excluded_paths = [
-    "lib/**/*",
-    ".env",
-    ".env.example", 
-    "*.md",
-    ".dart_tool/**/*",
-    "build/**/*",
-    "web/**/*",
-    "android/**/*",
-    "ios/**/*",
-    "linux/**/*",
-    "macos/**/*",
-    "windows/**/*",
-    "*.ps1",
-    "*.sh"
-  ]
