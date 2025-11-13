@@ -1,7 +1,28 @@
 # Build settings
 [build]
   publish = "build/web"
-  command = "echo 'Build already completed'"
+  command = """
+    # Create .env file from environment variables
+    echo "FIREBASE_WEB_API_KEY=$FIREBASE_WEB_API_KEY" > .env
+    echo "FIREBASE_WEB_APP_ID=$FIREBASE_WEB_APP_ID" >> .env
+    echo "FIREBASE_WEB_MESSAGING_SENDER_ID=$FIREBASE_WEB_MESSAGING_SENDER_ID" >> .env
+    echo "FIREBASE_WEB_PROJECT_ID=$FIREBASE_WEB_PROJECT_ID" >> .env
+    echo "FIREBASE_WEB_AUTH_DOMAIN=$FIREBASE_WEB_AUTH_DOMAIN" >> .env
+    echo "FIREBASE_WEB_STORAGE_BUCKET=$FIREBASE_WEB_STORAGE_BUCKET" >> .env
+    echo "FIREBASE_WEB_MEASUREMENT_ID=$FIREBASE_WEB_MEASUREMENT_ID" >> .env
+    echo "PEXELS_API_KEY=$PEXELS_API_KEY" >> .env
+    echo "DICTIONARY_API_BASE_URL=https://api.dictionaryapi.dev/api/v2/entries/en" >> .env
+    
+    # Install Flutter
+    git clone https://github.com/flutter/flutter.git -b stable --depth 1
+    export PATH="$PATH:`pwd`/flutter/bin"
+    flutter config --no-analytics
+    flutter doctor -v
+    
+    # Build the app
+    flutter pub get
+    flutter build web --release --web-renderer canvaskit
+  """
 
 # Redirect rules for Flutter web routing
 [[redirects]]
