@@ -1,5 +1,5 @@
 import 'package:dictionarydox/src/presentation/blocs/quiz/quiz_event.dart';
-import 'package:dictionarydox/src/presentation/widgets/dd_card.dart';
+import 'package:dictionarydox/src/presentation/pages/unit_details_page/pages/quiz_type_selector_page/widgets/quiz_type_card.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -19,72 +19,33 @@ class QuizTypeSelectorPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            DdCard(
+            QuizTypeCard(
+              icon: Icons.translate,
+              title: 'Translation Quiz',
+              description: 'Build the English word from letters',
               onTap: () => context.push(
                 '/unit/$unitId/quiz',
                 extra: QuizType.translation,
               ),
-              child: Column(
-                children: [
-                  const Icon(Icons.translate, size: 48),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Translation Quiz',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Build the English word from letters',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
             ),
             const SizedBox(height: 16),
-            DdCard(
+            QuizTypeCard(
+              icon: Icons.image,
+              title: 'Image Quiz',
+              description: 'Match the word to the correct image',
               onTap: () => context.push(
                 '/unit/$unitId/quiz',
                 extra: QuizType.image,
               ),
-              child: Column(
-                children: [
-                  const Icon(Icons.image, size: 48),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Image Quiz',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Match the word to the correct image',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
             ),
             const SizedBox(height: 16),
-            DdCard(
+            QuizTypeCard(
+              icon: Icons.hearing,
+              title: 'Listening Quiz',
+              description: 'Listen and build the word from letters',
               onTap: () => context.push(
                 '/unit/$unitId/quiz',
                 extra: QuizType.listening,
-              ),
-              child: Column(
-                children: [
-                  const Icon(Icons.hearing, size: 48),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Listening Quiz',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Listen and build the word from letters',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                ],
               ),
             ),
           ],
