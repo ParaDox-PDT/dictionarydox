@@ -1,4 +1,3 @@
-import 'package:audioplayers/audioplayers.dart';
 import 'package:dictionarydox/src/domain/entities/unit.dart';
 import 'package:dictionarydox/src/injector_container.dart';
 import 'package:dictionarydox/src/presentation/blocs/unit/unit_bloc.dart';
@@ -11,7 +10,6 @@ import 'package:go_router/go_router.dart';
 /// Mixin containing all business logic for UnitDetailsPage
 mixin UnitDetailsMixin<T extends StatefulWidget> on State<T> {
   late final UnitBloc unitBloc;
-  late final AudioPlayer audioPlayer;
   late final FlutterTts flutterTts;
   bool isCarouselView = false;
 
@@ -20,7 +18,6 @@ mixin UnitDetailsMixin<T extends StatefulWidget> on State<T> {
   @override
   void initState() {
     super.initState();
-    audioPlayer = AudioPlayer();
     flutterTts = FlutterTts();
     unitBloc = sl<UnitBloc>()..add(LoadUnitWordsEvent(unit.id));
     flutterTts.setLanguage('en-US');
@@ -29,7 +26,6 @@ mixin UnitDetailsMixin<T extends StatefulWidget> on State<T> {
   @override
   void dispose() {
     unitBloc.close();
-    audioPlayer.dispose();
     flutterTts.stop();
     super.dispose();
   }
@@ -60,15 +56,7 @@ mixin UnitDetailsMixin<T extends StatefulWidget> on State<T> {
 
   /// Play word pronunciation
   Future<void> playWordPronunciation(dynamic word) async {
-    if (word.audioUrl != null) {
-      try {
-        await audioPlayer.play(UrlSource(word.audioUrl));
-      } catch (e) {
-        await flutterTts.speak(word.english);
-      }
-    } else {
-      await flutterTts.speak(word.english);
-    }
+    await flutterTts.speak(word.english);
   }
 
   /// Show delete confirmation dialog

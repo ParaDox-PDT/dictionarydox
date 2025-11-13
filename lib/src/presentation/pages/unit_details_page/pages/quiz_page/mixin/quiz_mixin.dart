@@ -1,10 +1,8 @@
-import 'package:audioplayers/audioplayers.dart';
 import 'package:dictionarydox/src/presentation/blocs/quiz/quiz_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 mixin QuizMixin<T extends StatefulWidget> on State<T> {
-  final audioPlayer = AudioPlayer();
   final flutterTts = FlutterTts();
 
   @override
@@ -15,7 +13,6 @@ mixin QuizMixin<T extends StatefulWidget> on State<T> {
 
   @override
   void dispose() {
-    audioPlayer.dispose();
     flutterTts.stop();
     super.dispose();
   }
@@ -40,14 +37,6 @@ mixin QuizMixin<T extends StatefulWidget> on State<T> {
   }
 
   Future<void> playWordPronunciation(dynamic word) async {
-    if (word.audioUrl != null) {
-      try {
-        await audioPlayer.play(UrlSource(word.audioUrl));
-      } catch (e) {
-        await flutterTts.speak(word.english);
-      }
-    } else {
-      await flutterTts.speak(word.english);
-    }
+    await flutterTts.speak(word.english);
   }
 }
