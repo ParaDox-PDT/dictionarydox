@@ -1,5 +1,5 @@
 import 'package:dictionarydox/src/core/providers/initialization_provider.dart';
-import 'package:dictionarydox/src/presentation/pages/home_page.dart';
+import 'package:dictionarydox/src/presentation/pages/home_page/home_page.dart';
 import 'package:dictionarydox/src/presentation/pages/profile_page/profile_page.dart';
 import 'package:flutter/material.dart';
 
