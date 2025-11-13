@@ -44,6 +44,7 @@ class ProfilePage extends StatelessWidget {
                 SliverAppBar(
                   expandedHeight: 200,
                   pinned: true,
+                  backgroundColor: Theme.of(context).primaryColor,
                   flexibleSpace: LayoutBuilder(
                     builder: (context, constraints) {
                       // Calculate scroll progress
@@ -81,14 +82,17 @@ class ProfilePage extends StatelessWidget {
                                           : null,
                                     ),
                                     const SizedBox(width: 12),
-                                    // Display name when collapsed
+                                    // Display name when collapsed - rangi to'q
                                     Expanded(
                                       child: Text(
                                         user.displayName,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.w600,
-                                          color: Colors.white,
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black87,
                                         ),
                                         overflow: TextOverflow.ellipsis,
                                       ),
@@ -324,6 +328,9 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
+
+                      // Extra space to ensure scroll works on all screen sizes
+                      const SizedBox(height: 200),
                     ]),
                   ),
                 ),
