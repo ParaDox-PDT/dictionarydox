@@ -1,7 +1,7 @@
-# Build settings
+// Build settings for Flutter web on Netlify
 [build]
   publish = "build/web"
-  command = "echo 'Build already completed'"
+  command = "flutter build web --release"
 
 # Redirect rules for Flutter web routing
 [[redirects]]
