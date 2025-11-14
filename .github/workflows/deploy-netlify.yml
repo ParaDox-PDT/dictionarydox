@@ -24,25 +24,21 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Cache Flutter SDK
-        uses: actions/cache@v4
+      - name: Set up Flutter SDK
+        uses: subosito/flutter-action@v2
         with:
-          path: flutter
-          key: flutter-${{ env.FLUTTER_VERSION }}
-
-      - name: Install Flutter SDK
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          git clone https://github.com/flutter/flutter.git -b stable --depth 1 flutter
-
-      - name: Add Flutter to PATH
-        run: echo "${{ github.workspace }}/flutter/bin" >> $GITHUB_PATH
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
 
       - name: Flutter version
         run: flutter --version
 
       - name: Install dependencies
         run: flutter pub get
+
+      - name: Generate Hive adapters
+        run: dart run build_runner build --delete-conflicting-outputs
 
       - name: Build Flutter web (release)
         run: flutter build web --release
