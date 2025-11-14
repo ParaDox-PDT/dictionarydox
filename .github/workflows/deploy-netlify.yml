@@ -29,10 +29,15 @@ jobs:
 
       - name: Pull Netlify environment variables
         run: |
-          netlify env:pull .env \
-            --site=$NETLIFY_SITE_ID \
-            --auth=$NETLIFY_AUTH_TOKEN \
-            --yes
+          if ! netlify env:pull --yes .env; then
+            if [ -f ".env.example" ]; then
+              cp .env.example .env
+              echo "Netlify env pull failed; using .env.example instead"
+            else
+              echo "Failed to pull Netlify env and no .env.example found" >&2
+              exit 1
+            fi
+          fi
 
       - name: Set up Flutter SDK
         uses: subosito/flutter-action@v2
