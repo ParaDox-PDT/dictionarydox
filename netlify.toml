@@ -1,7 +1,7 @@
  # Build settings for Flutter web on Netlify
 [build]
   publish = "build/web"
-  command = "flutter build web --release"
+  command = "echo 'Build is handled by GitHub Actions'"
 
 # Redirect rules for Flutter web routing
 [[redirects]]
