@@ -1,0 +1,59 @@
+name: Build and Deploy to Netlify
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      FLUTTER_VERSION: ${{ secrets.FLUTTER_VERSION }}
+      NODE_VERSION: 18
+      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Cache Flutter SDK
+        uses: actions/cache@v4
+        with:
+          path: flutter
+          key: flutter-${{ env.FLUTTER_VERSION }}
+
+      - name: Install Flutter SDK
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          git clone https://github.com/flutter/flutter.git -b stable --depth 1 flutter
+
+      - name: Add Flutter to PATH
+        run: echo "${{ github.workspace }}/flutter/bin" >> $GITHUB_PATH
+
+      - name: Flutter version
+        run: flutter --version
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Flutter web (release)
+        run: flutter build web --release
+
+      - name: Install Netlify CLI
+        run: npm install -g netlify-cli
+
+      - name: Deploy to Netlify
+        run: |
+          netlify deploy \
+            --prod \
+            --dir=build/web \
+            --site=$NETLIFY_SITE_ID \
+            --auth=$NETLIFY_AUTH_TOKEN
