@@ -1,7 +1,11 @@
  # Build settings for Flutter web on Netlify
+ # Note: Build is handled by GitHub Actions (see .github/workflows/deploy-netlify.yml)
+ # Netlify only deploys the pre-built files from build/web
 [build]
   publish = "build/web"
-  command = "bash -c 'if ! command -v flutter &> /dev/null; then git clone https://github.com/flutter/flutter.git -b stable --depth 1 $HOME/flutter && export PATH=\"$HOME/flutter/bin:$PATH\"; fi && flutter --version && flutter pub get && (dart run build_runner build --delete-conflicting-outputs || true) && flutter build web --release'"
+  # Build command is disabled - GitHub Actions handles building
+  # If you want Netlify to build instead, uncomment the line below:
+  # command = "bash -c 'if ! command -v flutter &> /dev/null; then git clone https://github.com/flutter/flutter.git -b stable --depth 1 $HOME/flutter && export PATH=\"$HOME/flutter/bin:$PATH\"; fi && flutter --version && flutter pub get && (dart run build_runner build --delete-conflicting-outputs || true) && flutter build web --release'"
 
 # Redirect rules for Flutter web routing
 # Exclude service worker files and other static assets from SPA redirect
