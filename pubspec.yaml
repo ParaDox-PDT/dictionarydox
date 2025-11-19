@@ -79,7 +79,8 @@ flutter:
   
   assets:
     - assets/images/
-    - .env
+    # .env is not included for web builds (loaded from environment variables instead)
+    # For mobile/desktop, .env file should exist in project root
 
 flutter_launcher_icons:
   android: true
