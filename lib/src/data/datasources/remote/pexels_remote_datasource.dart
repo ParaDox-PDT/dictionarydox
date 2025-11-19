@@ -1,4 +1,5 @@
 import 'package:dictionarydox/src/core/error/exceptions.dart';
+import 'package:dictionarydox/src/core/utils/platform_utils.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -10,7 +11,14 @@ class PexelsRemoteDataSourceImpl implements PexelsRemoteDataSource {
   final Dio dio;
   static const String baseUrl = 'https://api.pexels.com/v1';
 
-  String get apiKey => dotenv.env['PEXELS_API_KEY'] ?? '';
+  String get apiKey {
+    // On web, Pexels API key is optional (can be empty)
+    // On mobile/desktop, try to get from .env file
+    if (PlatformUtils.isWeb) {
+      return ''; // Web: API key not available, image search will be disabled
+    }
+    return dotenv.env['PEXELS_API_KEY'] ?? '';
+  }
 
   PexelsRemoteDataSourceImpl(this.dio);
 

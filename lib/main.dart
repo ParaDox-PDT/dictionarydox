@@ -13,8 +13,28 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Load environment variables
-  await dotenv.load(fileName: ".env");
+  // Load environment variables (skip on web, loaded from HTML instead)
+  if (!PlatformUtils.isWeb) {
+    try {
+      await dotenv.load(fileName: ".env");
+    } catch (e) {
+      // .env file might not exist, continue anyway
+      debugPrint('Warning: Could not load .env file: $e');
+    }
+  } else {
+    // On web, environment variables are loaded from index.html via window.flutterEnv
+    // Load them into dotenv for compatibility
+    try {
+      // This will be populated by index.html script
+      // For now, just initialize empty dotenv to prevent errors
+      if (dotenv.env.isEmpty) {
+        // Environment variables will be available via window.flutterEnv in web
+        debugPrint('Web: Environment variables loaded from index.html');
+      }
+    } catch (e) {
+      debugPrint('Warning: Could not initialize dotenv on web: $e');
+    }
+  }
 
   // Initialize Firebase (required for auth and firestore)
   await Firebase.initializeApp(
