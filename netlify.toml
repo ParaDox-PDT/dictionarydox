@@ -4,6 +4,19 @@
   command = "echo 'Build is handled by GitHub Actions'"
 
 # Redirect rules for Flutter web routing
+# Exclude service worker files and other static assets from SPA redirect
+[[redirects]]
+  from = "/flutter_service_worker.js"
+  to = "/flutter_service_worker.js"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/firebase-messaging-sw.js"
+  to = "/firebase-messaging-sw.js"
+  status = 200
+  force = true
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
@@ -33,3 +46,16 @@
   for = "/*.css"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+# Service worker files should not be cached
+[[headers]]
+  for = "/flutter_service_worker.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Service-Worker-Allowed = "/"
+
+[[headers]]
+  for = "/firebase-messaging-sw.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Service-Worker-Allowed = "/"
