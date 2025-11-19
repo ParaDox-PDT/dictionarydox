@@ -43,10 +43,7 @@ class _ProfilePageState extends State<ProfilePage> with ProfileMixin {
         final isMobile = ResponsiveUtils.isMobile(context);
 
         return Scaffold(
-          appBar: isMobile ? null : AppBar(
-            title: const Text('Profile'),
-            elevation: 0,
-          ),
+          appBar: null, // Web uchun AppBar olib tashlandi
           body: isMobile
               ? ResponsiveWrapper(
                   maxWidth: 600,

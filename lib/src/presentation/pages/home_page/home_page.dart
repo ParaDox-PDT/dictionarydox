@@ -1,3 +1,4 @@
+import 'package:dictionarydox/src/core/utils/responsive_utils.dart';
 import 'package:dictionarydox/src/presentation/pages/home_page/widgets/home_app_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -11,8 +12,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
+    final isMobile = ResponsiveUtils.isMobile(context);
+    
     return Scaffold(
-      appBar: const HomeAppBar(),
+      appBar: isMobile ? const HomeAppBar() : null,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
