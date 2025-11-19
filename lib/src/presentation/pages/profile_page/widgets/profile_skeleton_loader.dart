@@ -7,17 +7,36 @@ class ProfileSkeletonLoader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = ResponsiveUtils.isMobile(context);
+    
     return ResponsiveWrapper(
-      maxWidth: 600,
+      maxWidth: isMobile
+          ? 600
+          : ResponsiveUtils.getMaxContentWidth(context),
       child: Shimmer.fromColors(
         baseColor: Colors.grey[300]!,
         highlightColor: Colors.grey[100]!,
-        child: CustomScrollView(
-          slivers: [
-            _buildSkeletonAppBar(context),
-            _buildSkeletonContent(context),
-          ],
-        ),
+        child: isMobile
+            ? CustomScrollView(
+                slivers: [
+                  _buildSkeletonAppBar(context),
+                  _buildSkeletonContent(context),
+                ],
+              )
+            : SingleChildScrollView(
+                padding: ResponsiveUtils.getResponsivePadding(context),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 32),
+                    _buildWebSkeletonHeader(context),
+                    const SizedBox(height: 48),
+                    ResponsiveUtils.isDesktop(context)
+                        ? _buildDesktopSkeletonLayout(context)
+                        : _buildTabletSkeletonLayout(context),
+                    const SizedBox(height: 48),
+                  ],
+                ),
+              ),
       ),
     );
   }
@@ -224,6 +243,140 @@ class ProfileSkeletonLoader extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildWebSkeletonHeader(BuildContext context) {
+    return Column(
+      children: [
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: Colors.grey[300]!,
+              width: 4,
+            ),
+          ),
+          child: SizedBox(
+            width: ResponsiveUtils.isDesktop(context) ? 140 : 120,
+            height: ResponsiveUtils.isDesktop(context) ? 140 : 120,
+          ),
+        ),
+        const SizedBox(height: 24),
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: SizedBox(
+            width: 200,
+            height: ResponsiveUtils.isDesktop(context) ? 32 : 28,
+          ),
+        ),
+        const SizedBox(height: 8),
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: const SizedBox(
+            width: 250,
+            height: 16,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDesktopSkeletonLayout(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          flex: 1,
+          child: _buildSkeletonCard([
+            _buildSkeletonRow(),
+            const Divider(height: 24),
+            _buildSkeletonRow(),
+            const Divider(height: 24),
+            _buildSkeletonRow(),
+          ]),
+        ),
+        const SizedBox(width: 32),
+        Expanded(
+          flex: 1,
+          child: Column(
+            children: [
+              _buildSkeletonCard([
+                _buildSkeletonListTile(),
+                const Divider(height: 1),
+                _buildSkeletonListTile(),
+              ]),
+              const SizedBox(height: 24),
+              Center(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const SizedBox(width: 200, height: 50),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Center(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const SizedBox(width: 150, height: 40),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTabletSkeletonLayout(BuildContext context) {
+    return Column(
+      children: [
+        _buildSkeletonCard([
+          _buildSkeletonRow(),
+          const Divider(height: 24),
+          _buildSkeletonRow(),
+          const Divider(height: 24),
+          _buildSkeletonRow(),
+        ]),
+        const SizedBox(height: 24),
+        _buildSkeletonCard([
+          _buildSkeletonListTile(),
+          const Divider(height: 1),
+          _buildSkeletonListTile(),
+        ]),
+        const SizedBox(height: 24),
+        Center(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const SizedBox(width: 200, height: 50),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Center(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const SizedBox(width: 150, height: 40),
+          ),
+        ),
+      ],
     );
   }
 }
