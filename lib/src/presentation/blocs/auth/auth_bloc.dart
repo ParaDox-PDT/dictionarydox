@@ -48,7 +48,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final userCredential = await _authService.signInWithGoogle();
 
       if (userCredential == null || userCredential.user == null) {
-        // User canceled sign-in
+        // User canceled sign-in or closed popup
+        emit(AuthError('Sign in was cancelled. Please try again.'));
         emit(Unauthenticated());
         return;
       }

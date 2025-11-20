@@ -6,6 +6,7 @@ class UserModel {
   final String email;
   final String displayName;
   final String? photoUrl;
+  final String? fcmToken;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -14,6 +15,7 @@ class UserModel {
     required this.email,
     required this.displayName,
     this.photoUrl,
+    this.fcmToken,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -24,6 +26,7 @@ class UserModel {
     required String email,
     required String? displayName,
     String? photoUrl,
+    String? fcmToken,
   }) {
     final now = DateTime.now();
     return UserModel(
@@ -31,6 +34,7 @@ class UserModel {
       email: email,
       displayName: displayName ?? email.split('@')[0],
       photoUrl: photoUrl,
+      fcmToken: fcmToken,
       createdAt: now,
       updatedAt: now,
     );
@@ -44,6 +48,7 @@ class UserModel {
       email: data['email'] ?? '',
       displayName: data['displayName'] ?? '',
       photoUrl: data['photoUrl'],
+      fcmToken: data['fcmToken'],
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       updatedAt: (data['updatedAt'] as Timestamp).toDate(),
     );
@@ -55,6 +60,7 @@ class UserModel {
       'email': email,
       'displayName': displayName,
       'photoUrl': photoUrl,
+      'fcmToken': fcmToken,
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
     };
@@ -65,6 +71,7 @@ class UserModel {
     String? email,
     String? displayName,
     String? photoUrl,
+    String? fcmToken,
     DateTime? updatedAt,
   }) {
     return UserModel(
@@ -72,6 +79,7 @@ class UserModel {
       email: email ?? this.email,
       displayName: displayName ?? this.displayName,
       photoUrl: photoUrl ?? this.photoUrl,
+      fcmToken: fcmToken ?? this.fcmToken,
       createdAt: createdAt,
       updatedAt: updatedAt ?? DateTime.now(),
     );
