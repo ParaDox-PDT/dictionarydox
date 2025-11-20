@@ -15,10 +15,18 @@ class WelcomeSection extends StatelessWidget {
             color: Colors.white.withOpacity(0.1),
             borderRadius: BorderRadius.circular(24),
           ),
-          child: const Icon(
-            Icons.book,
-            size: 80,
-            color: Colors.white,
+          child: Image.asset(
+            'assets/images/app_logo.png',
+            width: 80,
+            height: 80,
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) {
+              return const Icon(
+                Icons.book,
+                size: 80,
+                color: Colors.white,
+              );
+            },
           ),
         ),
         const SizedBox(height: 32),
