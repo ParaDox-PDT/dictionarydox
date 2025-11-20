@@ -295,7 +295,7 @@ class _AdminPageState extends State<AdminPage> {
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
-                      Icons.shield,
+                      Icons.security,
                       size: 64,
                       color: Theme.of(context).primaryColor,
                     ),

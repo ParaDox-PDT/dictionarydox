@@ -268,7 +268,7 @@ class _BottomNavShellState extends State<BottomNavShell> {
                   Padding(
                     padding: const EdgeInsets.only(top: 2, bottom: 8),
                     child: _buildDrawerItem(
-                      icon: Icons.shield_outlined,
+                      icon: Icons.security,
                       selectedIcon: Icons.shield,
                       label: 'Admin',
                       index: 3,
