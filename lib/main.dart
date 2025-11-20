@@ -9,6 +9,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:universal_html/html.dart' as html;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,14 +26,23 @@ void main() async {
     // On web, environment variables are loaded from index.html via window.flutterEnv
     // Load them into dotenv for compatibility
     try {
-      // This will be populated by index.html script
-      // For now, just initialize empty dotenv to prevent errors
-      if (dotenv.env.isEmpty) {
-        // Environment variables will be available via window.flutterEnv in web
-        debugPrint('Web: Environment variables loaded from index.html');
+      // Get environment variables from window.flutterEnv (set in index.html)
+      final window = html.window as dynamic;
+      if (window.flutterEnv != null) {
+        final env = window.flutterEnv as Map<String, dynamic>;
+        
+        // Load Pexels API key if available
+        if (env['PEXELS_API_KEY'] != null && env['PEXELS_API_KEY'].toString().isNotEmpty) {
+          dotenv.env['PEXELS_API_KEY'] = env['PEXELS_API_KEY'].toString();
+          debugPrint('Web: Pexels API key loaded from window.flutterEnv');
+        } else {
+          debugPrint('Web: PEXELS_API_KEY not found or empty in window.flutterEnv');
+        }
+      } else {
+        debugPrint('Web: window.flutterEnv not found - image search will not work without API key');
       }
     } catch (e) {
-      debugPrint('Warning: Could not initialize dotenv on web: $e');
+      debugPrint('Warning: Could not load environment variables on web: $e');
     }
   }
 

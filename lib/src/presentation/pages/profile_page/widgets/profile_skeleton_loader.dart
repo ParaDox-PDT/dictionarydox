@@ -9,35 +9,58 @@ class ProfileSkeletonLoader extends StatelessWidget {
   Widget build(BuildContext context) {
     final isMobile = ResponsiveUtils.isMobile(context);
     
-    return ResponsiveWrapper(
-      maxWidth: isMobile
-          ? 600
-          : ResponsiveUtils.getMaxContentWidth(context),
-      child: Shimmer.fromColors(
-        baseColor: Colors.grey[300]!,
-        highlightColor: Colors.grey[100]!,
-        child: isMobile
-            ? CustomScrollView(
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: isMobile
+          ? ResponsiveWrapper(
+              maxWidth: 600,
+              child: CustomScrollView(
                 slivers: [
                   _buildSkeletonAppBar(context),
                   _buildSkeletonContent(context),
                 ],
-              )
-            : SingleChildScrollView(
-                padding: ResponsiveUtils.getResponsivePadding(context),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 32),
-                    _buildWebSkeletonHeader(context),
-                    const SizedBox(height: 48),
-                    ResponsiveUtils.isDesktop(context)
-                        ? _buildDesktopSkeletonLayout(context)
-                        : _buildTabletSkeletonLayout(context),
-                    const SizedBox(height: 48),
-                  ],
+              ),
+            )
+          : Scrollbar(
+              thumbVisibility: false,
+              child: SingleChildScrollView(
+                child: Center(
+                  child: ResponsiveWrapper(
+                    maxWidth: ResponsiveUtils.getMaxContentWidth(context),
+                    child: Padding(
+                      padding: ResponsiveUtils.getResponsivePadding(context),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const SizedBox(height: 32),
+                          _buildWebSkeletonHeader(context),
+                          const SizedBox(height: 48),
+                          ResponsiveUtils.isDesktop(context)
+                              ? _buildDesktopSkeletonLayout(context)
+                              : _buildTabletSkeletonLayout(context),
+                          const SizedBox(height: 48),
+                          // Footer skeleton
+                          Center(
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const SizedBox(
+                                width: 150,
+                                height: 12,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 32),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ),
-      ),
+            ),
     );
   }
 
