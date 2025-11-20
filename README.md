@@ -26,7 +26,7 @@ A modern Flutter vocabulary trainer app built with Clean Architecture. Now avail
 
 ## 🚀 Live Demo
 
-**Web App**: [https://dictionarydox.netlify.app](https://dictionarydox.netlify.app)
+**Web App**: [https://dictionarydox.netlify.app](https://dicitionarydox.uz/)
 
 ## 📱 Platform Support
 
