@@ -9,4 +9,5 @@ abstract class UnitRepository {
   Future<Either<Failure, void>> deleteUnit(String unitId);
   Future<Either<Failure, Unit>> getUnit(String unitId);
   Future<Either<Failure, List<Unit>>> getAllUnits();
+  Future<Either<Failure, List<Unit>>> getGlobalUnits();
 }

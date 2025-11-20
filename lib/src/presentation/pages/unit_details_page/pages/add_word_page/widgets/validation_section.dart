@@ -7,7 +7,6 @@ import 'package:dictionarydox/src/presentation/widgets/dd_checkbox_row.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class ValidationSection extends StatelessWidget {
   final String unitId;
@@ -70,7 +69,9 @@ class ValidationSection extends StatelessWidget {
                       Expanded(
                         child: Text(
                           state.phonetic!,
-                          style: GoogleFonts.notoSans(
+                          style: TextStyle(
+                            fontFamily: 'NotoSans',
+                            fontFamilyFallback: const ['Poppins', 'sans-serif'],
                             fontSize: Theme.of(context)
                                     .textTheme
                                     .bodyLarge
