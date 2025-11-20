@@ -1,3 +1,4 @@
+import 'package:dictionarydox/src/core/services/notification_service.dart';
 import 'package:dictionarydox/src/core/services/user_service.dart';
 import 'package:dictionarydox/src/data/models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,6 +13,7 @@ class AuthService {
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final UserService _userService = UserService();
+  final NotificationService _notificationService = NotificationService();
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     // Don't specify clientId for web - let Firebase handle it
@@ -42,10 +44,24 @@ class AuthService {
         googleProvider.addScope('email');
         googleProvider.addScope('profile');
 
-        userCredential = await _firebaseAuth.signInWithPopup(googleProvider);
+        try {
+          userCredential = await _firebaseAuth.signInWithPopup(googleProvider);
 
-        if (kDebugMode) {
-          print('Signed in to Firebase: ${userCredential.user?.email}');
+          if (kDebugMode) {
+            print('Signed in to Firebase: ${userCredential.user?.email}');
+          }
+        } on FirebaseAuthException catch (e) {
+          // Handle popup closed by user
+          if (e.code == 'popup-closed-by-user' || 
+              e.code == 'cancelled-popup-request' ||
+              e.message?.contains('popup') == true) {
+            if (kDebugMode) {
+              print('Sign-in popup closed by user');
+            }
+            return null;
+          }
+          // Re-throw other Firebase auth exceptions
+          rethrow;
         }
       } else {
         // Mobile: Use google_sign_in package
@@ -97,6 +113,32 @@ class AuthService {
         );
 
         await _userService.createOrUpdateUser(userModel);
+
+        // Get and save FCM token
+        try {
+          final fcmToken = _notificationService.fcmToken;
+          if (fcmToken != null) {
+            await _userService.updateFcmToken(user.uid, fcmToken);
+            if (kDebugMode) {
+              print('FCM token saved to Firestore');
+            }
+          } else {
+            // Try to get token if not already initialized
+            await _notificationService.initialize();
+            final newFcmToken = _notificationService.fcmToken;
+            if (newFcmToken != null) {
+              await _userService.updateFcmToken(user.uid, newFcmToken);
+              if (kDebugMode) {
+                print('FCM token obtained and saved to Firestore');
+              }
+            }
+          }
+        } catch (e) {
+          // Don't fail login if FCM token save fails
+          if (kDebugMode) {
+            print('Error saving FCM token: $e');
+          }
+        }
 
         if (kDebugMode) {
           print('User data saved to Firestore');

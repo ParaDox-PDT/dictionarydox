@@ -86,6 +86,25 @@ class UserService {
     }
   }
 
+  /// Update user FCM token
+  Future<void> updateFcmToken(String userId, String fcmToken) async {
+    try {
+      await _firestore.collection(_usersCollection).doc(userId).update({
+        'fcmToken': fcmToken,
+        'updatedAt': Timestamp.now(),
+      });
+
+      if (kDebugMode) {
+        print('User FCM token updated');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error updating FCM token: $e');
+      }
+      rethrow;
+    }
+  }
+
   /// Delete user from Firestore
   Future<void> deleteUser(String userId) async {
     try {

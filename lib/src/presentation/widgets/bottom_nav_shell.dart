@@ -240,8 +240,8 @@ class _BottomNavShellState extends State<BottomNavShell> {
                 Padding(
                   padding: const EdgeInsets.only(top: 8, bottom: 4),
                   child: _buildDrawerItem(
-                    icon: Icons.home_outlined,
-                    selectedIcon: Icons.home_rounded,
+                    icon: Icons.home,
+                    selectedIcon: Icons.home,
                     label: 'Home',
                     index: 0,
                   ),
@@ -250,7 +250,7 @@ class _BottomNavShellState extends State<BottomNavShell> {
                   padding: const EdgeInsets.symmetric(vertical: 2),
                   child: _buildDrawerItem(
                     icon: Icons.folder_outlined,
-                    selectedIcon: Icons.folder_rounded,
+                    selectedIcon: Icons.folder,
                     label: 'Units',
                     index: 1,
                   ),
@@ -258,8 +258,8 @@ class _BottomNavShellState extends State<BottomNavShell> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 2),
                   child: _buildDrawerItem(
-                    icon: Icons.person_outline_rounded,
-                    selectedIcon: Icons.person_rounded,
+                    icon: Icons.person,
+                    selectedIcon: Icons.person,
                     label: 'Profile',
                     index: 2,
                   ),
@@ -268,8 +268,8 @@ class _BottomNavShellState extends State<BottomNavShell> {
                   Padding(
                     padding: const EdgeInsets.only(top: 2, bottom: 8),
                     child: _buildDrawerItem(
-                      icon: Icons.admin_panel_settings_outlined,
-                      selectedIcon: Icons.admin_panel_settings_rounded,
+                      icon: Icons.admin_panel_settings,
+                      selectedIcon: Icons.admin_panel_settings,
                       label: 'Admin',
                       index: 3,
                     ),
