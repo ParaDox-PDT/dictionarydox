@@ -33,9 +33,8 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
         if (event.quizType == QuizType.image) {
           filteredWords = words.where((w) => w.imageUrl != null).toList();
         } else if (event.quizType == QuizType.listening) {
-          filteredWords = words
-              .where((w) => w.audioUrl != null || w.phonetic != null)
-              .toList();
+          // Listening quiz'da barcha so'zlar chiqishi kerak, talaffuz bor yoki yo'qligi tekshirilmaydi
+          filteredWords = words; // Filter olib tashlandi - barcha so'zlar
         }
 
         if (filteredWords.isEmpty) {

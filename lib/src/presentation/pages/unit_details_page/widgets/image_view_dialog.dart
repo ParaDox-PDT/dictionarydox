@@ -18,21 +18,36 @@ class ImageViewDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final maxWidth = screenSize.width * 0.9;
+    final maxHeight = screenSize.height * 0.9;
+
     return Dialog(
       backgroundColor: Colors.transparent,
+      insetPadding: EdgeInsets.zero,
       child: GestureDetector(
         onTap: () => Navigator.of(context).pop(),
-        child: InteractiveViewer(
-          child: CachedNetworkImage(
-            imageUrl: imageUrl,
-            fit: BoxFit.contain,
-            placeholder: (context, url) => const Center(
-              child: CircularProgressIndicator(),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: maxWidth,
+              maxHeight: maxHeight,
             ),
-            errorWidget: (context, url, error) => const Icon(
-              Icons.error,
-              color: Colors.white,
-              size: 50,
+            child: InteractiveViewer(
+              minScale: 0.5,
+              maxScale: 4.0,
+              child: CachedNetworkImage(
+                imageUrl: imageUrl,
+                fit: BoxFit.contain,
+                placeholder: (context, url) => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+                errorWidget: (context, url, error) => const Icon(
+                  Icons.error,
+                  color: Colors.white,
+                  size: 50,
+                ),
+              ),
             ),
           ),
         ),

@@ -1,7 +1,7 @@
+import 'package:dictionarydox/src/config/constants.dart';
 import 'package:dictionarydox/src/core/error/exceptions.dart';
 import 'package:dictionarydox/src/core/utils/platform_utils.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:universal_html/html.dart' as html;
 
 abstract class PexelsRemoteDataSource {
@@ -13,23 +13,43 @@ class PexelsRemoteDataSourceImpl implements PexelsRemoteDataSource {
   static const String baseUrl = 'https://api.pexels.com/v1';
 
   String get apiKey {
-    // Try to get API key from environment variables
-    // On mobile/desktop, get from .env file
-    String key = dotenv.env['PEXELS_API_KEY'] ?? '';
+    // Use constant from AppConstants
+    String key = AppConstants.pexelsApiKey;
     
-    // If empty on web, try to get from window.flutterEnv (injected via index.html)
-    if (PlatformUtils.isWeb && key.isEmpty) {
+    // On web, try to get from window.flutterEnv if available (for runtime override)
+    if (PlatformUtils.isWeb) {
       try {
-        final window = html.window as dynamic;
-        if (window.flutterEnv != null) {
-          final env = window.flutterEnv as Map<String, dynamic>;
-          final webKey = env['PEXELS_API_KEY'];
-          if (webKey != null && webKey.toString().isNotEmpty) {
-            key = webKey.toString();
+        final window = html.window;
+        final windowDynamic = window as dynamic;
+        
+        // Try to call getPexelsApiKey() helper function
+        if (windowDynamic != null) {
+          try {
+            final getApiKey = windowDynamic.getPexelsApiKey;
+            if (getApiKey != null) {
+              final apiKeyResult = getApiKey();
+              if (apiKeyResult != null && apiKeyResult.toString().isNotEmpty) {
+                key = apiKeyResult.toString();
+              }
+            }
+          } catch (e) {
+            // Helper function might not exist, try direct access
+            try {
+              final flutterEnv = windowDynamic.flutterEnv;
+              if (flutterEnv != null) {
+                final env = flutterEnv as Map<String, dynamic>;
+                final webKey = env['PEXELS_API_KEY'];
+                if (webKey != null && webKey.toString().isNotEmpty) {
+                  key = webKey.toString();
+                }
+              }
+            } catch (_) {
+              // Ignore, use constant value
+            }
           }
         }
       } catch (e) {
-        // Ignore errors when accessing window.flutterEnv
+        // Ignore errors, use constant value
       }
     }
     
@@ -44,8 +64,7 @@ class PexelsRemoteDataSourceImpl implements PexelsRemoteDataSource {
     final key = apiKey;
     if (key.isEmpty) {
       throw NetworkException(
-        'Pexels API key is not configured. Please set PEXELS_API_KEY environment variable. '
-        'For web, add it to Netlify environment variables or index.html.',
+        'Pexels API key is not configured. Please set PEXELS_API_KEY in AppConstants.',
       );
     }
 
@@ -77,7 +96,7 @@ class PexelsRemoteDataSourceImpl implements PexelsRemoteDataSource {
       // Handle 401 Unauthorized
       if (response.statusCode == 401) {
         throw NetworkException(
-          'Invalid Pexels API key. Please check your PEXELS_API_KEY configuration.',
+          'Invalid Pexels API key. Please check your AppConstants.pexelsApiKey configuration.',
         );
       }
 

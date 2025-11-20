@@ -1,3 +1,4 @@
+import 'package:dictionarydox/src/core/utils/platform_utils.dart';
 import 'package:dictionarydox/src/domain/entities/unit.dart';
 import 'package:flutter/material.dart';
 
@@ -20,13 +21,17 @@ class UnitDetailsAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isWeb = PlatformUtils.isWeb;
+    
     return AppBar(
       title: Text(unit.name),
       actions: [
-        IconButton(
-          icon: Icon(isCarouselView ? Icons.view_list : Icons.view_carousel),
-          onPressed: onToggleView,
-        ),
+        // Web uchun carousel toggle ni olib tashlash
+        if (!isWeb)
+          IconButton(
+            icon: Icon(isCarouselView ? Icons.view_list : Icons.view_carousel),
+            onPressed: onToggleView,
+          ),
         IconButton(
           icon: const Icon(Icons.quiz),
           onPressed: onQuizPressed,

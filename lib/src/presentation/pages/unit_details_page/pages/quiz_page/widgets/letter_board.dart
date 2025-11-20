@@ -15,6 +15,9 @@ class LetterBoard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Next Question bosilgandan keyin readonly qilish
+    final isReadOnly = state.isCorrect != null;
+    
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -36,12 +39,14 @@ class LetterBoard extends StatelessWidget {
                 .asMap()
                 .entries
                 .map(
-                  (entry) => GestureDetector(
-                    onTap: () => context
-                        .read<QuizBloc>()
-                        .add(RemoveLetterEvent(entry.key)),
-                    child: LetterTile(letter: entry.value),
-                  ),
+                  (entry) => isReadOnly
+                      ? LetterTile(letter: entry.value) // Readonly - o'chirib bo'lmaydi
+                      : GestureDetector(
+                          onTap: () => context
+                              .read<QuizBloc>()
+                              .add(RemoveLetterEvent(entry.key)),
+                          child: LetterTile(letter: entry.value),
+                        ),
                 )
                 .toList(),
       ),
