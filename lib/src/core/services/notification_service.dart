@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:dictionarydox/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -13,7 +14,13 @@ import 'web_notification_stub.dart'
 /// Background message handler - must be a top-level function
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
+  // Check if Firebase is already initialized to avoid duplicate app error
+  // Background handler runs in a separate isolate, so we need to initialize Firebase here
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
   if (kDebugMode) {
     print('Background message received: ${message.messageId}');
     print('Title: ${message.notification?.title}');

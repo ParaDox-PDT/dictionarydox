@@ -58,12 +58,10 @@ class ProfileAppBar extends StatelessWidget {
             Expanded(
               child: Text(
                 user.displayName,
-                style: TextStyle(
+                style:const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white
-                      : Colors.black87,
+                  color: Colors.white,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
