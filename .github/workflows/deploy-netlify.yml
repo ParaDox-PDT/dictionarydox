@@ -70,7 +70,7 @@ jobs:
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
 
       - name: Build Flutter web (release)
-        run: flutter build web --release
+        run: flutter build web --release --web-renderer html
 
       - name: Deploy to Netlify
         run: |
