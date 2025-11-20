@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   // Colors
@@ -26,6 +25,7 @@ class AppTheme {
     brightness: Brightness.light,
     primaryColor: primaryColor,
     scaffoldBackgroundColor: backgroundColor,
+    fontFamily: 'Poppins', // Default font family
     colorScheme: const ColorScheme.light(
       primary: primaryColor,
       secondary: accentColor,
@@ -38,7 +38,8 @@ class AppTheme {
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: false,
-      titleTextStyle: GoogleFonts.poppins(
+      titleTextStyle: const TextStyle(
+        fontFamily: 'Poppins',
         color: textPrimary,
         fontSize: 24,
         fontWeight: FontWeight.bold,
@@ -61,7 +62,8 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadius),
         ),
-        textStyle: GoogleFonts.poppins(
+        textStyle: const TextStyle(
+          fontFamily: 'Poppins',
           fontSize: 16,
           fontWeight: FontWeight.w600,
         ),
@@ -75,7 +77,8 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadius),
         ),
-        textStyle: GoogleFonts.poppins(
+        textStyle: const TextStyle(
+          fontFamily: 'Poppins',
           fontSize: 16,
           fontWeight: FontWeight.w600,
         ),
@@ -102,33 +105,36 @@ class AppTheme {
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
     ),
-    textTheme: TextTheme(
-      displayLarge: GoogleFonts.poppins(
+    textTheme: const TextTheme(
+      displayLarge: TextStyle(
+        fontFamily: 'Poppins',
         fontSize: 32,
         fontWeight: FontWeight.bold,
         color: textPrimary,
       ),
-      headlineMedium: GoogleFonts.poppins(
+      headlineMedium: TextStyle(
+        fontFamily: 'Poppins',
         fontSize: 24,
         fontWeight: FontWeight.bold,
         color: textPrimary,
       ),
-      titleLarge: GoogleFonts.poppins(
+      titleLarge: TextStyle(
+        fontFamily: 'Poppins',
         fontSize: 20,
         fontWeight: FontWeight.w600,
         color: textPrimary,
       ),
-      bodyLarge: GoogleFonts.poppins(
+      bodyLarge: TextStyle(
+        fontFamily: 'Poppins',
         fontSize: 16,
         color: textPrimary,
       ),
-      bodyMedium: GoogleFonts.poppins(
+      bodyMedium: TextStyle(
+        fontFamily: 'Poppins',
         fontSize: 14,
         color: textSecondary,
       ),
     ),
-  ).copyWith(
-    textTheme: GoogleFonts.poppinsTextTheme(),
   );
 
   // Dark theme
@@ -137,6 +143,7 @@ class AppTheme {
     brightness: Brightness.dark,
     primaryColor: primaryColor,
     scaffoldBackgroundColor: darkBackground,
+    fontFamily: 'Poppins', // Default font family
     colorScheme: const ColorScheme.dark(
       primary: primaryColor,
       secondary: accentColor,
@@ -149,7 +156,8 @@ class AppTheme {
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: false,
-      titleTextStyle: GoogleFonts.poppins(
+      titleTextStyle: const TextStyle(
+        fontFamily: 'Poppins',
         color: darkTextPrimary,
         fontSize: 24,
         fontWeight: FontWeight.bold,
@@ -172,7 +180,8 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadius),
         ),
-        textStyle: GoogleFonts.poppins(
+        textStyle: const TextStyle(
+          fontFamily: 'Poppins',
           fontSize: 16,
           fontWeight: FontWeight.w600,
         ),
@@ -186,7 +195,8 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadius),
         ),
-        textStyle: GoogleFonts.poppins(
+        textStyle: const TextStyle(
+          fontFamily: 'Poppins',
           fontSize: 16,
           fontWeight: FontWeight.w600,
         ),
@@ -213,32 +223,35 @@ class AppTheme {
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
     ),
-    textTheme: TextTheme(
-      displayLarge: GoogleFonts.poppins(
+    textTheme: const TextTheme(
+      displayLarge: TextStyle(
+        fontFamily: 'Poppins',
         fontSize: 32,
         fontWeight: FontWeight.bold,
         color: darkTextPrimary,
       ),
-      headlineMedium: GoogleFonts.poppins(
+      headlineMedium: TextStyle(
+        fontFamily: 'Poppins',
         fontSize: 24,
         fontWeight: FontWeight.bold,
         color: darkTextPrimary,
       ),
-      titleLarge: GoogleFonts.poppins(
+      titleLarge: TextStyle(
+        fontFamily: 'Poppins',
         fontSize: 20,
         fontWeight: FontWeight.w600,
         color: darkTextPrimary,
       ),
-      bodyLarge: GoogleFonts.poppins(
+      bodyLarge: TextStyle(
+        fontFamily: 'Poppins',
         fontSize: 16,
         color: darkTextPrimary,
       ),
-      bodyMedium: GoogleFonts.poppins(
+      bodyMedium: TextStyle(
+        fontFamily: 'Poppins',
         fontSize: 14,
         color: darkTextSecondary,
       ),
     ),
-  ).copyWith(
-    textTheme: GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme),
   );
 }

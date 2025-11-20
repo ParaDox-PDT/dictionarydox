@@ -1,5 +1,8 @@
 import 'package:dictionarydox/src/core/providers/initialization_provider.dart';
+import 'package:dictionarydox/src/core/services/auth_service.dart';
 import 'package:dictionarydox/src/core/utils/responsive_utils.dart';
+import 'package:dictionarydox/src/injector_container.dart';
+import 'package:dictionarydox/src/presentation/pages/admin_page/admin_page.dart';
 import 'package:dictionarydox/src/presentation/pages/home_page/home_page.dart';
 import 'package:dictionarydox/src/presentation/pages/profile_page/profile_page.dart';
 import 'package:dictionarydox/src/presentation/pages/units_page/units_page.dart';
@@ -16,6 +19,69 @@ class BottomNavShell extends StatefulWidget {
 class _BottomNavShellState extends State<BottomNavShell> {
   int _currentIndex = 0;
   bool _isDrawerExpanded = true; // Web drawer expanded state
+  late final AuthService _authService;
+
+  @override
+  void initState() {
+    super.initState();
+    _authService = sl<AuthService>();
+  }
+
+  /// Check if current user is admin
+  bool get _isAdmin {
+    final email = _authService.email;
+    return email == 'doniyorjorabekov@gmail.com';
+  }
+
+  /// Get list of screens based on admin status
+  List<Widget> get _screens {
+    if (_isAdmin) {
+      return [
+        const HomePage(),
+        const UnitsPage(),
+        const ProfilePage(),
+        const AdminPage(),
+      ];
+    }
+    return [
+      const HomePage(),
+      const UnitsPage(),
+      const ProfilePage(),
+    ];
+  }
+
+  /// Get navigation destinations for mobile
+  List<NavigationDestination> get _mobileDestinations {
+    final destinations = [
+      const NavigationDestination(
+        icon: Icon(Icons.home_outlined),
+        selectedIcon: Icon(Icons.home, color: Colors.blue),
+        label: 'Home',
+      ),
+      const NavigationDestination(
+        icon: Icon(Icons.folder_outlined),
+        selectedIcon: Icon(Icons.folder, color: Colors.blue),
+        label: 'Units',
+      ),
+      const NavigationDestination(
+        icon: Icon(Icons.person_outline),
+        selectedIcon: Icon(Icons.person, color: Colors.blue),
+        label: 'Profile',
+      ),
+    ];
+
+    if (_isAdmin) {
+      destinations.add(
+        const NavigationDestination(
+          icon: Icon(Icons.admin_panel_settings_outlined),
+          selectedIcon: Icon(Icons.admin_panel_settings, color: Colors.blue),
+          label: 'Admin',
+        ),
+      );
+    }
+
+    return destinations;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,12 +163,8 @@ class _BottomNavShellState extends State<BottomNavShell> {
   Widget _buildNavigation() {
     final isMobile = ResponsiveUtils.isMobile(context);
 
-    // Pre-build screens to maintain their state
-    const List<Widget> screens = [
-      HomePage(),
-      UnitsPage(),
-      ProfilePage(),
-    ];
+    // Get screens based on admin status
+    final screens = _screens;
 
     if (isMobile) {
       // Mobile: Bottom Navigation Bar
@@ -121,23 +183,7 @@ class _BottomNavShellState extends State<BottomNavShell> {
           elevation: 8,
           backgroundColor: Theme.of(context).colorScheme.surface,
           indicatorColor: Colors.blue.withOpacity(0.2),
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.home_outlined),
-              selectedIcon: Icon(Icons.home, color: Colors.blue),
-              label: 'Home',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.folder_outlined),
-              selectedIcon: Icon(Icons.folder, color: Colors.blue),
-              label: 'Units',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.person_outline),
-              selectedIcon: Icon(Icons.person, color: Colors.blue),
-              label: 'Profile',
-            ),
-          ],
+          destinations: _mobileDestinations,
         ),
       );
     } else {
@@ -210,7 +256,7 @@ class _BottomNavShellState extends State<BottomNavShell> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 2, bottom: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 2),
                   child: _buildDrawerItem(
                     icon: Icons.person_outline_rounded,
                     selectedIcon: Icons.person_rounded,
@@ -218,6 +264,21 @@ class _BottomNavShellState extends State<BottomNavShell> {
                     index: 2,
                   ),
                 ),
+                if (_isAdmin)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2, bottom: 8),
+                    child: _buildDrawerItem(
+                      icon: Icons.admin_panel_settings_outlined,
+                      selectedIcon: Icons.admin_panel_settings_rounded,
+                      label: 'Admin',
+                      index: 3,
+                    ),
+                  )
+                else
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2, bottom: 8),
+                    child: Container(),
+                  ),
               ],
             ),
           ),
