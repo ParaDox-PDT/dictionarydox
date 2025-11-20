@@ -93,6 +93,26 @@
       window._flutter = {};
     }
     
+    // Load environment variables for web (from Netlify or hardcoded)
+    // These will be available to Flutter via window.flutterEnv
+    window.flutterEnv = window.flutterEnv || {};
+    
+    // Pexels API Key configuration
+    // The build script (scripts/inject-api-key.sh) will inject the API key here during build
+    // For local development: Uncomment and set your API key below, or set it in .env file
+    // For Netlify: Set PEXELS_API_KEY in Netlify dashboard → Site settings → Environment variables
+    // The GitHub Actions workflow will inject it during build
+    if (!window.flutterEnv.PEXELS_API_KEY) {
+      // For local development, uncomment and set your API key:
+      // window.flutterEnv.PEXELS_API_KEY = 'your_pexels_api_key_here';
+      
+      // Try to get from a meta tag (if injected during build via alternative method)
+      const metaKey = document.querySelector('meta[name="pexels-api-key"]');
+      if (metaKey) {
+        window.flutterEnv.PEXELS_API_KEY = metaKey.getAttribute('content');
+      }
+    }
+    
     // Register service worker for Firebase Cloud Messaging (non-blocking, after Flutter loads)
     if ('serviceWorker' in navigator) {
       // Delay Firebase SW registration to avoid conflicts with Flutter loader

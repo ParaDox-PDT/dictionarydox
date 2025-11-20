@@ -147,9 +147,14 @@ class ValidationSection extends StatelessWidget {
     BuildContext context,
     AddWordValidated state,
   ) async {
+    // Use URI with query parameter for better web compatibility
+    // Encode the query parameter properly
+    final encodedQuery = Uri.encodeComponent(englishWord);
+    final path = '/unit/$unitId/search-images?query=$encodedQuery';
+    
     final result = await context.push<String>(
-      '/unit/$unitId/search-images',
-      extra: englishWord,
+      path,
+      extra: englishWord, // Keep extra for mobile compatibility
     );
     if (result != null && context.mounted) {
       context.read<AddWordBloc>().add(SelectImageEvent(result));

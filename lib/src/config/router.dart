@@ -10,6 +10,7 @@ import 'package:dictionarydox/src/presentation/pages/unit_details_page/pages/qui
 import 'package:dictionarydox/src/presentation/pages/unit_details_page/pages/quiz_type_selector_page/quiz_type_selector_page.dart';
 import 'package:dictionarydox/src/presentation/pages/unit_details_page/unit_details_page.dart';
 import 'package:dictionarydox/src/presentation/widgets/bottom_nav_shell.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 final router = GoRouter(
@@ -75,7 +76,35 @@ final router = GoRouter(
     GoRoute(
       path: '/unit/:unitId/search-images',
       builder: (context, state) {
-        final query = state.extra as String;
+        // Try to get query from extra first (for mobile), then from query parameters (for web)
+        String? query = state.extra as String?;
+        
+        // If extra is null, try to get from URL query parameters (for web)
+        if (query == null || query.isEmpty) {
+          try {
+            // Try to get from state.uri (go_router 12+)
+            if (state.uri.hasQuery) {
+              query = state.uri.queryParameters['query'];
+            }
+            
+            // Decode the query if it was encoded
+            if (query != null) {
+              query = Uri.decodeComponent(query);
+            }
+          } catch (e) {
+            // If state.uri is not available, query will remain null
+            query = null;
+          }
+        }
+        
+        if (query == null || query.isEmpty) {
+          // If query is null or empty, show error
+          return const Scaffold(
+            body: Center(
+              child: Text('Error: No search query provided'),
+            ),
+          );
+        }
         return ImageSearchPage(query: query);
       },
     ),

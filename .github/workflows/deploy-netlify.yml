@@ -58,6 +58,17 @@ jobs:
       - name: Generate Hive adapters
         run: dart run build_runner build --delete-conflicting-outputs
 
+      - name: Inject API key into index.html
+        run: |
+          if [ -f "scripts/inject-api-key.sh" ]; then
+            chmod +x scripts/inject-api-key.sh
+            bash scripts/inject-api-key.sh
+          else
+            echo "Warning: inject-api-key.sh not found, skipping API key injection"
+          fi
+        env:
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+
       - name: Build Flutter web (release)
         run: flutter build web --release
 
