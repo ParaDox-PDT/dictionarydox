@@ -13,7 +13,8 @@ class AdminService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final String _unitsCollection = 'units';
   final String _wordsCollection = 'words';
-  final PexelsRemoteDataSource _pexelsDataSource = PexelsRemoteDataSourceImpl(Dio());
+  final PexelsRemoteDataSource _pexelsDataSource =
+      PexelsRemoteDataSourceImpl(Dio());
 
   // Words list - can be modified manually
   List<Map<String, dynamic>> wordsList = [
@@ -552,119 +553,134 @@ class AdminService {
     try {
       final unitsJson = <Map<String, dynamic>>[
         {
-          "id": "unit_fruits",
-          "name": "Fruits",
-          "icon": "🍎",
+          "id": "unit_daily_routine",
+          "name": "Daily Routine",
+          "icon": "⏰",
           "usersId": [],
           "isGlobal": true,
           "wordCount": 0
         },
         {
-          "id": "unit_vegetables",
-          "name": "Vegetables",
-          "icon": "🥕",
+          "id": "unit_family",
+          "name": "Family",
+          "icon": "👨‍👩‍👧‍👦",
           "usersId": [],
           "isGlobal": true,
           "wordCount": 0
         },
         {
-          "id": "unit_animals",
-          "name": "Animals",
-          "icon": "🐶",
+          "id": "unit_numbers",
+          "name": "Numbers",
+          "icon": "🔢",
           "usersId": [],
           "isGlobal": true,
           "wordCount": 0
         },
         {
-          "id": "unit_colors",
-          "name": "Colors",
-          "icon": "🎨",
+          "id": "unit_time_date",
+          "name": "Time & Date",
+          "icon": "🕒",
           "usersId": [],
           "isGlobal": true,
           "wordCount": 0
         },
         {
-          "id": "unit_jobs",
-          "name": "Jobs",
-          "icon": "👨‍🏫",
+          "id": "unit_emotions",
+          "name": "Emotions",
+          "icon": "😊",
           "usersId": [],
           "isGlobal": true,
           "wordCount": 0
         },
         {
-          "id": "unit_transport",
-          "name": "Transport",
-          "icon": "🚗",
+          "id": "unit_sports",
+          "name": "Sports",
+          "icon": "⚽",
           "usersId": [],
           "isGlobal": true,
           "wordCount": 0
         },
         {
-          "id": "unit_clothes",
-          "name": "Clothes",
-          "icon": "👕",
+          "id": "unit_hobbies",
+          "name": "Hobbies",
+          "icon": "🎮",
           "usersId": [],
           "isGlobal": true,
           "wordCount": 0
         },
         {
-          "id": "unit_food",
-          "name": "Food",
-          "icon": "🍔",
+          "id": "unit_places_in_town",
+          "name": "Places in Town",
+          "icon": "🏙️",
           "usersId": [],
           "isGlobal": true,
           "wordCount": 0
         },
         {
-          "id": "unit_drinks",
-          "name": "Drinks",
-          "icon": "🥤",
+          "id": "unit_countries_nationalities",
+          "name": "Countries & Nationalities",
+          "icon": "🌍",
           "usersId": [],
           "isGlobal": true,
           "wordCount": 0
         },
         {
-          "id": "unit_body_parts",
-          "name": "Body Parts",
-          "icon": "🧠",
+          "id": "unit_health",
+          "name": "Health",
+          "icon": "🩺",
           "usersId": [],
           "isGlobal": true,
           "wordCount": 0
         },
         {
-          "id": "unit_house_items",
-          "name": "House Items",
-          "icon": "🏠",
+          "id": "unit_shopping",
+          "name": "Shopping",
+          "icon": "🛍️",
           "usersId": [],
           "isGlobal": true,
           "wordCount": 0
         },
         {
-          "id": "unit_weather",
-          "name": "Weather",
-          "icon": "⛅",
+          "id": "unit_travel",
+          "name": "Travel",
+          "icon": "✈️",
           "usersId": [],
           "isGlobal": true,
           "wordCount": 0
         },
         {
-          "id": "unit_school",
-          "name": "School",
-          "icon": "📚",
+          "id": "unit_nature",
+          "name": "Nature",
+          "icon": "🌳",
           "usersId": [],
           "isGlobal": true,
           "wordCount": 0
         },
         {
-          "id": "unit_technology",
-          "name": "Technology",
-          "icon": "💻",
+          "id": "unit_basic_adjectives",
+          "name": "Basic Adjectives",
+          "icon": "⭐",
           "usersId": [],
           "isGlobal": true,
           "wordCount": 0
         },
+        {
+          "id": "unit_common_phrases",
+          "name": "Common Phrases",
+          "icon": "💬",
+          "usersId": [],
+          "isGlobal": true,
+          "wordCount": 0
+        },
+        {
+          "id": "unit_prepositions",
+          "name": "Prepositions",
+          "icon": "📍",
+          "usersId": [],
+          "isGlobal": true,
+          "wordCount": 0
+        }
       ];
-
       if (kDebugMode) {
         print('Starting to upload ${unitsJson.length} global units...');
       }
@@ -804,8 +820,7 @@ class AdminService {
         } catch (e) {
           errorCount++;
           if (kDebugMode) {
-            print(
-                '✗ Failed to update wordCount for unit ${unitDoc.id}: $e');
+            print('✗ Failed to update wordCount for unit ${unitDoc.id}: $e');
           }
         }
       }
@@ -881,9 +896,10 @@ class AdminService {
 
           // Take first 5 images (or all if less than 5)
           final imagesToChoose = images.take(5).toList();
-          
+
           // Randomly select one image
-          final selectedImageUrl = imagesToChoose[random.nextInt(imagesToChoose.length)];
+          final selectedImageUrl =
+              imagesToChoose[random.nextInt(imagesToChoose.length)];
 
           // Update word in Firebase
           await _firestore.collection(_wordsCollection).doc(wordDoc.id).update({
@@ -893,7 +909,8 @@ class AdminService {
           successCount++;
 
           if (kDebugMode) {
-            print('✓ Updated image for word: $englishWord -> $selectedImageUrl');
+            print(
+                '✓ Updated image for word: $englishWord -> $selectedImageUrl');
           }
 
           // Add a small delay to avoid rate limiting

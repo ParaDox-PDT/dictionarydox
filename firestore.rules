@@ -22,6 +22,12 @@ service cloud.firestore {
       return isGlobal == false;
     }
     
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return isAuthenticated() && 
+             request.auth.token.email == 'doniyorjorabekov@gmail.com';
+    }
+    
     // Units collection rules
     match /units/{unitId} {
       // Read: 
@@ -37,57 +43,108 @@ service cloud.firestore {
                        resource.data.get('userId', '') == request.auth.uid))
                    );
       
-      // Create: User can create if authenticated, includes their userId in usersId array, and isGlobal = false
+      // Create: 
+      // - Admin can create global or user-specific units
+      // - Regular users can only create user-specific units (isGlobal = false)
       allow create: if isAuthenticated() && 
-                       request.resource.data.isGlobal == false &&
                        request.resource.data.title is string &&
                        request.resource.data.createdAt is timestamp &&
-                       request.resource.data.usersId is list &&
-                       request.auth.uid in request.resource.data.usersId;
+                       (
+                         // Admin can create any unit (global or user-specific)
+                         isAdmin() ||
+                         // Regular users can only create user-specific units
+                         (request.resource.data.isGlobal == false &&
+                          request.resource.data.usersId is list &&
+                          request.auth.uid in request.resource.data.usersId)
+                       );
       
-      // Update: User can update if they are in usersId array AND it's not global
+      // Update: 
+      // - Admin can update any unit
+      // - Regular users can only update user-specific units they have access to
       allow update: if isAuthenticated() && 
-                       resource.data.isGlobal == false &&
-                       request.resource.data.isGlobal == false &&
-                       (request.auth.uid in resource.data.get('usersId', []) ||
-                        resource.data.get('userId', '') == request.auth.uid) &&
-                       request.resource.data.usersId is list &&
-                       request.auth.uid in request.resource.data.usersId;
+                       (
+                         // Admin can update any unit
+                         isAdmin() ||
+                         // Regular users can only update user-specific units they own
+                         (resource.data.isGlobal == false &&
+                          request.resource.data.isGlobal == false &&
+                          (request.auth.uid in resource.data.get('usersId', []) ||
+                           resource.data.get('userId', '') == request.auth.uid) &&
+                          request.resource.data.usersId is list &&
+                          request.auth.uid in request.resource.data.usersId)
+                       );
       
-      // Delete: User can delete if they are in usersId array AND it's not global
+      // Delete: 
+      // - Admin can delete any unit
+      // - Regular users can only delete user-specific units they have access to
       allow delete: if isAuthenticated() && 
-                       resource.data.isGlobal == false &&
-                       (request.auth.uid in resource.data.get('usersId', []) ||
-                        resource.data.get('userId', '') == request.auth.uid);
+                       (
+                         // Admin can delete any unit
+                         isAdmin() ||
+                         // Regular users can only delete user-specific units they own
+                         (resource.data.isGlobal == false &&
+                          (request.auth.uid in resource.data.get('usersId', []) ||
+                           resource.data.get('userId', '') == request.auth.uid))
+                       );
     }
     
     // Words collection rules
     match /words/{wordId} {
-      // Read: User can read if they own it AND it's not global
-      allow read: if isAuthenticated() && 
-                     resource.data.userId == request.auth.uid && 
-                     resource.data.isGlobal == false;
+      // Read: 
+      // - Admin can read any word
+      // - Global words: any authenticated user can read
+      // - User-specific words: user must own them
+      allow read: if isAuthenticated() && (
+                     // Admin can read any word
+                     isAdmin() ||
+                     // Global words: anyone can read
+                     resource.data.isGlobal == true ||
+                     // User-specific words: must own them
+                     (resource.data.isGlobal == false &&
+                      resource.data.userId == request.auth.uid)
+                   );
       
-      // Create: User can create if authenticated, sets their userId, and isGlobal = false
+      // Create: 
+      // - Admin can create global or user-specific words
+      // - Regular users can only create user-specific words
       allow create: if isAuthenticated() && 
-                       request.resource.data.userId == request.auth.uid && 
-                       request.resource.data.isGlobal == false &&
                        request.resource.data.english is string &&
                        request.resource.data.uzbek is string &&
                        request.resource.data.unitId is string &&
-                       request.resource.data.createdAt is timestamp;
+                       request.resource.data.createdAt is timestamp &&
+                       (
+                         // Admin can create any word
+                         isAdmin() ||
+                         // Regular users can only create user-specific words
+                         (request.resource.data.userId == request.auth.uid && 
+                          request.resource.data.isGlobal == false)
+                       );
       
-      // Update: User can update if they own it AND it's not global
+      // Update: 
+      // - Admin can update any word
+      // - Regular users can only update their own user-specific words
       allow update: if isAuthenticated() && 
-                       resource.data.userId == request.auth.uid && 
-                       resource.data.isGlobal == false &&
-                       request.resource.data.userId == request.auth.uid &&
-                       request.resource.data.isGlobal == false;
+                       (
+                         // Admin can update any word
+                         isAdmin() ||
+                         // Regular users can only update their own user-specific words
+                         (resource.data.userId == request.auth.uid && 
+                          resource.data.isGlobal == false &&
+                          request.resource.data.userId == request.auth.uid &&
+                          request.resource.data.isGlobal == false)
+                       );
       
-      // Delete: User can delete if they own it AND it's not global
+      // Delete: 
+      // - Admin can delete any word
+      // - Regular users can only delete their own user-specific words
       allow delete: if isAuthenticated() && 
-                       resource.data.userId == request.auth.uid && 
-                       resource.data.isGlobal == false;
+                       (
+                         // Admin can delete any word
+                         isAdmin() ||
+                         // Regular users can only delete their own user-specific words
+                         (resource.data.userId == request.auth.uid && 
+                          resource.data.isGlobal == false)
+                       );
     }
     
     // Users collection (if you need rules for it)
