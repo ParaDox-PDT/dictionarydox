@@ -16,7 +16,9 @@ import 'package:dictionarydox/src/data/models/unit_model.dart';
 import 'package:dictionarydox/src/data/models/word_model.dart';
 import 'package:dictionarydox/src/data/repositories/dictionary_repository_impl.dart';
 import 'package:dictionarydox/src/data/repositories/image_repository_impl.dart';
+import 'package:dictionarydox/src/data/repositories/unit_firestore_repository.dart';
 import 'package:dictionarydox/src/data/repositories/unit_repository_impl.dart';
+import 'package:dictionarydox/src/data/repositories/word_firestore_repository.dart';
 import 'package:dictionarydox/src/data/repositories/word_repository_impl.dart';
 import 'package:dictionarydox/src/domain/repositories/dictionary_repository.dart';
 import 'package:dictionarydox/src/domain/repositories/image_repository.dart';
@@ -127,12 +129,22 @@ Future<void> initDependencies() async {
   );
 
   // Repositories
+  sl.registerLazySingleton<WordFirestoreRepository>(
+    () => WordFirestoreRepository(),
+  );
+
   sl.registerLazySingleton<WordRepository>(
     () => WordRepositoryImpl(
       localDataSource: sl(),
       remoteDataSource: sl(),
       unitRepository: sl(),
+      firestoreRepository: sl(),
+      authService: sl(),
     ),
+  );
+
+  sl.registerLazySingleton<UnitFirestoreRepository>(
+    () => UnitFirestoreRepository(),
   );
 
   sl.registerLazySingleton<UnitRepository>(
@@ -140,6 +152,8 @@ Future<void> initDependencies() async {
       localDataSource: sl(),
       wordLocalDataSource: sl(),
       remoteDataSource: sl(),
+      firestoreRepository: sl(),
+      authService: sl(),
     ),
   );
 
