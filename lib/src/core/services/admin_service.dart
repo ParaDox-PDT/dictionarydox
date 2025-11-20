@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dictionarydox/src/data/datasources/remote/pexels_remote_datasource.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'dart:math';
 
 /// Service for admin operations
 class AdminService {
@@ -10,6 +13,7 @@ class AdminService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final String _unitsCollection = 'units';
   final String _wordsCollection = 'words';
+  final PexelsRemoteDataSource _pexelsDataSource = PexelsRemoteDataSourceImpl(Dio());
 
   // Words list - can be modified manually
   List<Map<String, dynamic>> wordsList = [
@@ -753,6 +757,166 @@ class AdminService {
     } catch (e) {
       if (kDebugMode) {
         print('Error uploading words: $e');
+      }
+      rethrow;
+    }
+  }
+
+  /// Update word counts for all global units based on actual words in Firebase
+  Future<void> updateGlobalUnitsWordCounts() async {
+    try {
+      if (kDebugMode) {
+        print('Starting to update word counts for all global units...');
+      }
+
+      // Get all global units
+      final unitsQuery = await _firestore
+          .collection(_unitsCollection)
+          .where('isGlobal', isEqualTo: true)
+          .get();
+
+      int successCount = 0;
+      int errorCount = 0;
+
+      for (final unitDoc in unitsQuery.docs) {
+        try {
+          final unitId = unitDoc.id;
+
+          // Count words for this unit
+          final wordsQuery = await _firestore
+              .collection(_wordsCollection)
+              .where('unitId', isEqualTo: unitId)
+              .get();
+
+          final wordCount = wordsQuery.docs.length;
+
+          // Update unit's wordCount in Firebase
+          await _firestore.collection(_unitsCollection).doc(unitId).update({
+            'wordCount': wordCount,
+          });
+
+          successCount++;
+
+          if (kDebugMode) {
+            print(
+                '✓ Updated wordCount for ${unitDoc.data()['name']} (${unitDoc.id}): $wordCount words');
+          }
+        } catch (e) {
+          errorCount++;
+          if (kDebugMode) {
+            print(
+                '✗ Failed to update wordCount for unit ${unitDoc.id}: $e');
+          }
+        }
+      }
+
+      if (kDebugMode) {
+        print(
+            'Word count update complete! Success: $successCount, Errors: $errorCount');
+      }
+
+      if (errorCount > 0) {
+        throw Exception('Failed to update word counts for $errorCount unit(s)');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error updating word counts: $e');
+      }
+      rethrow;
+    }
+  }
+
+  /// Update images for all words in a unit
+  /// Fetches 5 images from Pexels for each word and randomly selects one
+  Future<void> updateUnitWordsImages(String unitId) async {
+    try {
+      if (kDebugMode) {
+        print('Starting to update images for unit: $unitId');
+      }
+
+      // Get all words for this unit from Firebase
+      final wordsQuery = await _firestore
+          .collection(_wordsCollection)
+          .where('unitId', isEqualTo: unitId)
+          .get();
+
+      if (wordsQuery.docs.isEmpty) {
+        if (kDebugMode) {
+          print('No words found for unit: $unitId');
+        }
+        return;
+      }
+
+      int successCount = 0;
+      int errorCount = 0;
+      final random = Random();
+
+      // Process each word
+      for (final wordDoc in wordsQuery.docs) {
+        try {
+          final wordData = wordDoc.data();
+          final englishWord = wordData['english'] as String?;
+
+          if (englishWord == null || englishWord.isEmpty) {
+            if (kDebugMode) {
+              print('Skipping word ${wordDoc.id}: no English word found');
+            }
+            continue;
+          }
+
+          // Fetch images from Pexels
+          if (kDebugMode) {
+            print('Fetching images for word: $englishWord');
+          }
+
+          final images = await _pexelsDataSource.searchImages(englishWord);
+
+          if (images.isEmpty) {
+            if (kDebugMode) {
+              print('No images found for word: $englishWord');
+            }
+            errorCount++;
+            continue;
+          }
+
+          // Take first 5 images (or all if less than 5)
+          final imagesToChoose = images.take(5).toList();
+          
+          // Randomly select one image
+          final selectedImageUrl = imagesToChoose[random.nextInt(imagesToChoose.length)];
+
+          // Update word in Firebase
+          await _firestore.collection(_wordsCollection).doc(wordDoc.id).update({
+            'imageUrl': selectedImageUrl,
+          });
+
+          successCount++;
+
+          if (kDebugMode) {
+            print('✓ Updated image for word: $englishWord -> $selectedImageUrl');
+          }
+
+          // Add a small delay to avoid rate limiting
+          await Future.delayed(const Duration(milliseconds: 200));
+        } catch (e) {
+          errorCount++;
+          if (kDebugMode) {
+            print('✗ Failed to update image for word ${wordDoc.id}: $e');
+          }
+        }
+      }
+
+      if (kDebugMode) {
+        print(
+            'Image update complete for unit $unitId! Success: $successCount, Errors: $errorCount');
+      }
+
+      if (errorCount > 0 && successCount == 0) {
+        throw Exception('Failed to update images for all words');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error updating unit words images: $e');
       }
       rethrow;
     }
