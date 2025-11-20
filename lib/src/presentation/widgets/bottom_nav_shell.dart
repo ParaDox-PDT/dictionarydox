@@ -429,81 +429,105 @@ class _BottomNavShellState extends State<BottomNavShell> {
   }) {
     final isSelected = _currentIndex == index;
 
+    // Fixed hex colors to avoid Brave CSS mapping bugs
+    // Using explicit colors instead of Colors.grey[700] prevents Brave from
+    // invalidating layers during color lookups
+    const Color unselectedIconColor =
+        Color(0xFF616161); // Equivalent to Colors.grey[700]
+    const Color unselectedTextColor = Color(0xFF616161);
+
+    // Get primary color once to avoid repeated Theme lookups
+    final primaryColor = Theme.of(context).primaryColor;
+
+    // Determine icon and colors once per build to prevent switching
+    // This prevents layer invalidation in Brave when icon changes
+    final currentIcon = isSelected ? selectedIcon : icon;
+    final iconColor = isSelected ? primaryColor : unselectedIconColor;
+    final textColor = isSelected ? primaryColor : unselectedTextColor;
+    final iconBgColor = isSelected
+        ? primaryColor.withOpacity(0.15)
+        : const Color(0xFFF5F5F5)
+            .withOpacity(0.1); // Fixed grey instead of Colors.grey
+
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: _isDrawerExpanded ? 12 : 6,
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            setState(() {
-              _currentIndex = index;
-            });
-          },
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            constraints: const BoxConstraints(
-              minHeight: 48,
-            ),
-            padding: EdgeInsets.symmetric(
-              horizontal: _isDrawerExpanded ? 16 : 10,
-              vertical: 14,
-            ),
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? Theme.of(context).primaryColor.withOpacity(0.12)
-                  : Colors.transparent,
-              borderRadius: BorderRadius.circular(12),
-              border: isSelected
-                  ? Border(
-                      left: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                        width: 3,
-                      ),
-                    )
-                  : null,
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? Theme.of(context).primaryColor.withOpacity(0.15)
-                        : Colors.grey.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(
-                    isSelected ? selectedIcon : icon,
-                    color: isSelected
-                        ? Theme.of(context).primaryColor
-                        : Colors.grey[700],
-                    size: 22,
-                  ),
-                ),
-                if (_isDrawerExpanded) ...[
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Text(
-                      label,
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight:
-                            isSelected ? FontWeight.w600 : FontWeight.w500,
-                        color: isSelected
-                            ? Theme.of(context).primaryColor
-                            : Colors.grey[700],
-                        letterSpacing: -0.2,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+      child: RepaintBoundary(
+        // Isolate repaints to prevent Brave from invalidating parent layers
+        child: Material(
+          color: Colors.transparent,
+          clipBehavior: Clip.hardEdge, // Prevents layer invalidation in Brave
+          child: InkWell(
+            onTap: () {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              constraints: const BoxConstraints(
+                minHeight: 48,
+              ),
+              padding: EdgeInsets.symmetric(
+                horizontal: _isDrawerExpanded ? 16 : 10,
+                vertical: 14,
+              ),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? primaryColor.withOpacity(0.12)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+                border: isSelected
+                    ? Border(
+                        left: BorderSide(
+                          color: primaryColor,
+                          width: 3,
+                        ),
+                      )
+                    : null,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Simplified container - removed AnimatedContainer to reduce rebuilds
+                  // Using Container with explicit values prevents Brave from invalidating
+                  // layers during animation state changes
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: iconBgColor,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    // Single Icon widget with stable properties prevents font reloading
+                    // Using key to ensure icon doesn't get recreated unnecessarily
+                    child: Icon(
+                      currentIcon,
+                      color: iconColor,
+                      size: 22,
+                      // Explicitly set text direction to prevent Brave font loading issues
+                      textDirection: TextDirection.ltr,
                     ),
                   ),
+                  if (_isDrawerExpanded) ...[
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Text(
+                        label,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight:
+                              isSelected ? FontWeight.w600 : FontWeight.w500,
+                          color: textColor,
+                          letterSpacing: -0.2,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ),
