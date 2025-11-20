@@ -15,13 +15,25 @@ class DdCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final borderRadius = BorderRadius.circular(AppTheme.borderRadius);
+    
     return Card(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppTheme.borderRadius),
-        child: Padding(
-          padding: padding ?? const EdgeInsets.all(16.0),
-          child: child,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: borderRadius,
+      ),
+      child: ClipRRect(
+        borderRadius: borderRadius,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: borderRadius,
+            child: Padding(
+              padding: padding ?? const EdgeInsets.all(16.0),
+              child: child,
+            ),
+          ),
         ),
       ),
     );

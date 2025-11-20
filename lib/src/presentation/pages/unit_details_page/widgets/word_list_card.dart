@@ -19,9 +19,13 @@ class WordListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isWeb = MediaQuery.of(context).size.width > 600;
+    
     return DdCard(
+      padding: isWeb ? const EdgeInsets.all(12.0) : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -32,7 +36,7 @@ class WordListCard extends StatelessWidget {
                     // Responsive image size based on screen width
                     final screenWidth = MediaQuery.of(context).size.width;
                     final imageSize = screenWidth > 600
-                        ? 80.0 // Desktop/Tablet: larger
+                        ? 80.0 // Desktop/Tablet: smaller for web
                         : screenWidth > 400
                             ? 70.0 // Large phone
                             : 60.0; // Small phone
@@ -59,18 +63,24 @@ class WordListCard extends StatelessWidget {
                   },
                 ),
               if (word.imageUrl != null)
-                SizedBox(width: MediaQuery.of(context).size.width > 600 ? 16 : 12),
+                SizedBox(width: MediaQuery.of(context).size.width > 600 ? 12 : 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       word.english,
                       style: Theme.of(context).textTheme.titleLarge,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
+                    const SizedBox(height: 2),
                     Text(
                       word.uzbek,
                       style: Theme.of(context).textTheme.bodyLarge,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     if (word.phonetic != null && word.phonetic!.isNotEmpty) ...[
                       const SizedBox(height: 4),
@@ -82,22 +92,31 @@ class WordListCard extends StatelessWidget {
                           fontStyle: FontStyle.italic,
                           color: Colors.grey,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ],
                 ),
               ),
               Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
                     icon: const Icon(Icons.volume_up),
                     color: Theme.of(context).primaryColor,
                     onPressed: onPlayAudio,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    iconSize: isWeb ? 20 : 24,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 4),
                   IconButton(
                     icon: const Icon(Icons.delete, color: Colors.red),
                     onPressed: onDelete,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    iconSize: isWeb ? 20 : 24,
                   ),
                 ],
               ),
@@ -105,34 +124,42 @@ class WordListCard extends StatelessWidget {
           ),
           if (word.description != null && word.description!.isNotEmpty) ...[
             const SizedBox(height: 8),
-            const Divider(),
-            const SizedBox(height: 8),
+            const Divider(height: 1),
+            const SizedBox(height: 6),
             Text(
               'Description:',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 4),
             Text(
               word.description!,
               style: Theme.of(context).textTheme.bodyMedium,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
           if (word.example != null && word.example!.isNotEmpty) ...[
             const SizedBox(height: 8),
-            const Divider(),
-            const SizedBox(height: 8),
+            const Divider(height: 1),
+            const SizedBox(height: 6),
             Text(
               'Example:',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 4),
             Text(
               word.example!,
               style: Theme.of(context).textTheme.bodyMedium,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ],

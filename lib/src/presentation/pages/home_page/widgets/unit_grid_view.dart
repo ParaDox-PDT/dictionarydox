@@ -24,7 +24,7 @@ class UnitGridView extends StatelessWidget {
         crossAxisCount: ResponsiveUtils.getGridColumns(context),
         crossAxisSpacing: 16,
         mainAxisSpacing: 16,
-        childAspectRatio: 3,
+        childAspectRatio: 3, // Reduced from 3 to prevent extra space at bottom
       ),
       itemCount: units.length,
       itemBuilder: (context, index) {
