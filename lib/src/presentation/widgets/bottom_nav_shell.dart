@@ -313,10 +313,18 @@ class _BottomNavShellState extends State<BottomNavShell> {
                     color: Colors.white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(
-                    Icons.menu_book_rounded,
-                    color: Colors.white,
-                    size: 24,
+                  child: Image.asset(
+                    'assets/images/app_logo.png',
+                    width: 24,
+                    height: 24,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(
+                        Icons.menu_book_rounded,
+                        color: Colors.white,
+                        size: 24,
+                      );
+                    },
                   ),
                 ),
                 const SizedBox(width: 12),

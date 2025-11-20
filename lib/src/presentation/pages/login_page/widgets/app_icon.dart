@@ -27,10 +27,18 @@ class AppIcon extends StatelessWidget {
           ),
         ],
       ),
-      child: Icon(
-        Icons.book,
-        size: size,
-        color: iconColor ?? const Color(0xFF2196F3),
+      child: Image.asset(
+        'assets/images/app_logo.png',
+        width: size,
+        height: size,
+        fit: BoxFit.contain,
+        errorBuilder: (context, error, stackTrace) {
+          return Icon(
+            Icons.book,
+            size: size,
+            color: iconColor ?? const Color(0xFF2196F3),
+          );
+        },
       ),
     );
   }
