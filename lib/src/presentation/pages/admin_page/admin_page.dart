@@ -12,6 +12,7 @@ class AdminPage extends StatefulWidget {
 class _AdminPageState extends State<AdminPage> {
   final AdminService _adminService = AdminService();
   bool _isUploading = false;
+  bool _isUploadingWords = false;
 
   Future<void> _handleUpload() async {
     final confirmed = await showDialog<bool>(
@@ -75,6 +76,70 @@ class _AdminPageState extends State<AdminPage> {
     }
   }
 
+  Future<void> _handleUploadWords() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Upload Words'),
+        content: Text(
+          'Are you sure you want to upload ${_adminService.wordsList.length} words to Firebase? This will create/update all words in Firestore.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Upload'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    if (!mounted) return;
+
+    setState(() {
+      _isUploadingWords = true;
+    });
+
+    try {
+      await _adminService.uploadWords(_adminService.wordsList);
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '${_adminService.wordsList.length} words uploaded successfully!',
+          ),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error uploading words: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isUploadingWords = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isMobile = ResponsiveUtils.isMobile(context);
@@ -121,7 +186,7 @@ class _AdminPageState extends State<AdminPage> {
                         ),
                   ),
                   const SizedBox(height: 48),
-                  // Upload Card
+                  // Upload Units Card
                   Card(
                     elevation: 2,
                     shape: RoundedRectangleBorder(
@@ -160,7 +225,8 @@ class _AdminPageState extends State<AdminPage> {
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton.icon(
-                              onPressed: _isUploading ? null : _handleUpload,
+                              onPressed:
+                                  _isUploading ? null : _handleUpload,
                               icon: _isUploading
                                   ? const SizedBox(
                                       width: 20,
@@ -176,6 +242,117 @@ class _AdminPageState extends State<AdminPage> {
                                   : const Icon(Icons.cloud_upload),
                               label: Text(
                                 _isUploading ? 'Uploading...' : 'Upload Units',
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Theme.of(context).primaryColor,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 16,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  // Upload Words Card
+                  Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.book,
+                                color: Theme.of(context).primaryColor,
+                                size: 28,
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                'Upload Words',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Upload words to Firebase Firestore. This will create or update ${_adminService.wordsList.length} words. You can modify the words list in AdminService.wordsList.',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          const SizedBox(height: 8),
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.blue.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: Colors.blue.withOpacity(0.3),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.info_outline,
+                                  size: 20,
+                                  color: Colors.blue[700],
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'Words list can be modified in AdminService.wordsList',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.copyWith(
+                                          color: Colors.blue[700],
+                                          fontStyle: FontStyle.italic,
+                                        ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: _isUploadingWords
+                                  ? null
+                                  : _handleUploadWords,
+                              icon: _isUploadingWords
+                                  ? const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                          Colors.white,
+                                        ),
+                                      ),
+                                    )
+                                  : const Icon(Icons.book),
+                              label: Text(
+                                _isUploadingWords
+                                    ? 'Uploading...'
+                                    : 'Upload Words (${_adminService.wordsList.length})',
                               ),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Theme.of(context).primaryColor,

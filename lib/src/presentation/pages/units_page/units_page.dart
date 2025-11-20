@@ -123,7 +123,6 @@ class _UnitsPageState extends State<UnitsPage>
                             onCreateUnit: navigateToCreateUnit,
                           ),
                           GlobalUnitsTab(
-                            units: state.units,
                             onUnitTap: navigateToUnitDetails,
                           ),
                         ],

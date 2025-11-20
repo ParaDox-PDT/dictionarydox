@@ -6,6 +6,7 @@ import 'package:dictionarydox/src/presentation/pages/unit_details_page/mixin/uni
 import 'package:dictionarydox/src/presentation/pages/unit_details_page/widgets/unit_details_app_bar.dart';
 import 'package:dictionarydox/src/presentation/pages/unit_details_page/widgets/words_carousel_view.dart';
 import 'package:dictionarydox/src/presentation/pages/unit_details_page/widgets/words_list_view.dart';
+import 'package:dictionarydox/src/presentation/pages/unit_details_page/widgets/words_shimmer_loader.dart';
 import 'package:dictionarydox/src/presentation/widgets/empty_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,7 +39,7 @@ class _UnitDetailsPageState extends State<UnitDetailsPage>
         child: BlocBuilder<UnitBloc, UnitState>(
           builder: (context, state) {
             if (state is UnitLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return const WordsShimmerLoader();
             }
 
             if (state is UnitError) {

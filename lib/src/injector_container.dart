@@ -7,8 +7,11 @@ import 'package:dictionarydox/src/core/storage/web_storage_service.dart';
 import 'package:dictionarydox/src/core/utils/platform_utils.dart';
 import 'package:dictionarydox/src/data/datasources/local/unit_local_datasource.dart';
 import 'package:dictionarydox/src/data/datasources/local/word_local_datasource.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dictionarydox/src/data/datasources/remote/dictionary_remote_datasource.dart';
 import 'package:dictionarydox/src/data/datasources/remote/pexels_remote_datasource.dart';
+import 'package:dictionarydox/src/data/datasources/remote/unit_remote_datasource.dart';
+import 'package:dictionarydox/src/data/datasources/remote/word_remote_datasource.dart';
 import 'package:dictionarydox/src/data/models/unit_model.dart';
 import 'package:dictionarydox/src/data/models/word_model.dart';
 import 'package:dictionarydox/src/data/repositories/dictionary_repository_impl.dart';
@@ -24,6 +27,7 @@ import 'package:dictionarydox/src/domain/usecases/create_unit.dart';
 import 'package:dictionarydox/src/domain/usecases/delete_unit.dart';
 import 'package:dictionarydox/src/domain/usecases/delete_word.dart';
 import 'package:dictionarydox/src/domain/usecases/get_all_units.dart';
+import 'package:dictionarydox/src/domain/usecases/get_global_units.dart';
 import 'package:dictionarydox/src/domain/usecases/get_unit_words.dart';
 import 'package:dictionarydox/src/domain/usecases/search_images.dart';
 import 'package:dictionarydox/src/domain/usecases/validate_word.dart';
@@ -114,15 +118,28 @@ Future<void> initDependencies() async {
     () => PexelsRemoteDataSourceImpl(sl<Dio>()),
   );
 
+  sl.registerLazySingleton<UnitRemoteDataSource>(
+    () => UnitRemoteDataSourceImpl(FirebaseFirestore.instance),
+  );
+
+  sl.registerLazySingleton<WordRemoteDataSource>(
+    () => WordRemoteDataSourceImpl(FirebaseFirestore.instance),
+  );
+
   // Repositories
   sl.registerLazySingleton<WordRepository>(
-    () => WordRepositoryImpl(localDataSource: sl()),
+    () => WordRepositoryImpl(
+      localDataSource: sl(),
+      remoteDataSource: sl(),
+      unitRepository: sl(),
+    ),
   );
 
   sl.registerLazySingleton<UnitRepository>(
     () => UnitRepositoryImpl(
       localDataSource: sl(),
       wordLocalDataSource: sl(),
+      remoteDataSource: sl(),
     ),
   );
 
@@ -140,6 +157,7 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton(() => DeleteUnit(sl()));
   sl.registerLazySingleton(() => DeleteWord(sl()));
   sl.registerLazySingleton(() => GetAllUnits(sl()));
+  sl.registerLazySingleton(() => GetGlobalUnits(sl()));
   sl.registerLazySingleton(() => GetUnitWords(sl()));
   sl.registerLazySingleton(() => SearchImages(sl()));
   sl.registerLazySingleton(() => ValidateWord(sl()));
