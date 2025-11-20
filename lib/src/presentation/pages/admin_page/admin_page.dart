@@ -664,6 +664,8 @@ class _AdminPageState extends State<AdminPage> {
                                   final isUpdating =
                                       _updatingUnits[unit.id] ?? false;
 
+                                  final isMobile = ResponsiveUtils.isMobile(context);
+                                  
                                   return Container(
                                     padding: const EdgeInsets.all(16),
                                     decoration: BoxDecoration(
@@ -673,86 +675,175 @@ class _AdminPageState extends State<AdminPage> {
                                         color: Colors.grey[200]!,
                                       ),
                                     ),
-                                    child: Row(
-                                      children: [
-                                        if (unit.icon != null) ...[
-                                          Text(
-                                            unit.icon!,
-                                            style: const TextStyle(fontSize: 24),
-                                          ),
-                                          const SizedBox(width: 12),
-                                        ],
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                    child: isMobile
+                                        ? Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                unit.name,
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .titleMedium
-                                                    ?.copyWith(
-                                                      fontWeight: FontWeight.bold,
+                                              Row(
+                                                children: [
+                                                  if (unit.icon != null) ...[
+                                                    Text(
+                                                      unit.icon!,
+                                                      style: const TextStyle(fontSize: 24),
                                                     ),
+                                                    const SizedBox(width: 12),
+                                                  ],
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment.start,
+                                                      children: [
+                                                        Text(
+                                                          unit.name,
+                                                          style: Theme.of(context)
+                                                              .textTheme
+                                                              .titleMedium
+                                                              ?.copyWith(
+                                                                fontWeight: FontWeight.bold,
+                                                              ),
+                                                        ),
+                                                        const SizedBox(height: 4),
+                                                        Text(
+                                                          '${unit.wordCount} words',
+                                                          style: Theme.of(context)
+                                                              .textTheme
+                                                              .bodySmall
+                                                              ?.copyWith(
+                                                                color: Colors.grey[600],
+                                                              ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
-                                              const SizedBox(height: 4),
-                                              Text(
-                                                '${unit.wordCount} words',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodySmall
-                                                    ?.copyWith(
-                                                      color: Colors.grey[600],
+                                              const SizedBox(height: 12),
+                                              SizedBox(
+                                                width: double.infinity,
+                                                child: ElevatedButton.icon(
+                                                  onPressed: isUpdating
+                                                      ? null
+                                                      : () =>
+                                                          _handleUpdateUnitWordsImages(
+                                                            unit.id,
+                                                            unit.name,
+                                                          ),
+                                                  icon: isUpdating
+                                                      ? const SizedBox(
+                                                          width: 16,
+                                                          height: 16,
+                                                          child:
+                                                              CircularProgressIndicator(
+                                                            strokeWidth: 2,
+                                                            valueColor:
+                                                                AlwaysStoppedAnimation<
+                                                                    Color>(
+                                                              Colors.white,
+                                                            ),
+                                                          ),
+                                                        )
+                                                      : const Icon(Icons.image, size: 18),
+                                                  label: const Text(
+                                                    "Update Unit Word's Image",
+                                                    style: TextStyle(fontSize: 12),
+                                                  ),
+                                                  style: ElevatedButton.styleFrom(
+                                                    backgroundColor:
+                                                        Theme.of(context).primaryColor,
+                                                    foregroundColor: Colors.white,
+                                                    padding: const EdgeInsets.symmetric(
+                                                      horizontal: 16,
+                                                      vertical: 12,
                                                     ),
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(8),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        : Row(
+                                            children: [
+                                              if (unit.icon != null) ...[
+                                                Text(
+                                                  unit.icon!,
+                                                  style: const TextStyle(fontSize: 24),
+                                                ),
+                                                const SizedBox(width: 12),
+                                              ],
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      unit.name,
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .titleMedium
+                                                          ?.copyWith(
+                                                            fontWeight: FontWeight.bold,
+                                                          ),
+                                                    ),
+                                                    const SizedBox(height: 4),
+                                                    Text(
+                                                      '${unit.wordCount} words',
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodySmall
+                                                          ?.copyWith(
+                                                            color: Colors.grey[600],
+                                                          ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              const SizedBox(width: 12),
+                                              ElevatedButton.icon(
+                                                onPressed: isUpdating
+                                                    ? null
+                                                    : () =>
+                                                        _handleUpdateUnitWordsImages(
+                                                          unit.id,
+                                                          unit.name,
+                                                        ),
+                                                icon: isUpdating
+                                                    ? const SizedBox(
+                                                        width: 16,
+                                                        height: 16,
+                                                        child:
+                                                            CircularProgressIndicator(
+                                                          strokeWidth: 2,
+                                                          valueColor:
+                                                              AlwaysStoppedAnimation<
+                                                                  Color>(
+                                                            Colors.white,
+                                                          ),
+                                                        ),
+                                                      )
+                                                    : const Icon(Icons.image, size: 18),
+                                                label: const Text(
+                                                  "Update Unit Word's Image",
+                                                  style: TextStyle(fontSize: 12),
+                                                ),
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      Theme.of(context).primaryColor,
+                                                  foregroundColor: Colors.white,
+                                                  padding: const EdgeInsets.symmetric(
+                                                    horizontal: 16,
+                                                    vertical: 12,
+                                                  ),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(8),
+                                                  ),
+                                                ),
                                               ),
                                             ],
                                           ),
-                                        ),
-                                        const SizedBox(width: 12),
-                                        ElevatedButton.icon(
-                                          onPressed: isUpdating
-                                              ? null
-                                              : () =>
-                                                  _handleUpdateUnitWordsImages(
-                                                    unit.id,
-                                                    unit.name,
-                                                  ),
-                                          icon: isUpdating
-                                              ? const SizedBox(
-                                                  width: 16,
-                                                  height: 16,
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                    strokeWidth: 2,
-                                                    valueColor:
-                                                        AlwaysStoppedAnimation<
-                                                            Color>(
-                                                      Colors.white,
-                                                    ),
-                                                  ),
-                                                )
-                                              : const Icon(Icons.image, size: 18),
-                                          label: const Text(
-                                            "Update Unit Word's Image",
-                                            style: TextStyle(fontSize: 12),
-                                          ),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                Theme.of(context).primaryColor,
-                                            foregroundColor: Colors.white,
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 16,
-                                              vertical: 12,
-                                            ),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
                                   );
                                 },
                               );
