@@ -18,11 +18,20 @@ class WordsCarouselView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isWeb = screenWidth > 600;
+    
+    // Web uchun carousel height ni cheklash
+    final carouselHeight = isWeb
+        ? (screenHeight * 0.65).clamp(400.0, 600.0) // Web: max 600px
+        : screenHeight * 0.75; // Mobile: 75% of screen
+    
     return CarouselSlider.builder(
       itemCount: words.length,
       options: CarouselOptions(
-        height: MediaQuery.of(context).size.height * 0.75,
-        viewportFraction: 0.85,
+        height: carouselHeight,
+        viewportFraction: isWeb ? 0.7 : 0.85, // Web uchun kichikroq viewport
         enlargeCenterPage: true,
         enableInfiniteScroll: false,
         autoPlay: false,

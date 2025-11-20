@@ -27,27 +27,54 @@ class WordCarouselCard extends StatelessWidget {
             if (word.imageUrl != null) ...[
               GestureDetector(
                 onTap: onImageTap,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: CachedNetworkImage(
-                    imageUrl: word.imageUrl!,
-                    height: 200,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => const ImageShimmer(
-                      width: double.infinity,
-                      height: 200,
-                      borderRadius: BorderRadius.all(Radius.circular(12)),
-                    ),
-                    errorWidget: (context, url, error) => Container(
-                      height: 200,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(12),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    // Responsive image height based on screen size
+                    final screenHeight = MediaQuery.of(context).size.height;
+                    final screenWidth = MediaQuery.of(context).size.width;
+                    final isWeb = screenWidth > 600;
+                    
+                    // Web uchun kichikroq o'lcham
+                    double imageHeight;
+                    if (isWeb) {
+                      // Web: max 250px yoki screen height ning 25%
+                      imageHeight = (screenHeight * 0.25).clamp(150.0, 250.0);
+                    } else {
+                      // Mobile: screen height ning 25%
+                      imageHeight = (screenHeight * 0.25).clamp(150.0, 300.0);
+                    }
+
+                    return ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: imageHeight,
+                          maxWidth: double.infinity,
+                        ),
+                        child: AspectRatio(
+                          aspectRatio: 16 / 9, // Maintain aspect ratio
+                          child: CachedNetworkImage(
+                            imageUrl: word.imageUrl!,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => ImageShimmer(
+                              width: double.infinity,
+                              height: imageHeight,
+                              borderRadius: const BorderRadius.all(Radius.circular(12)),
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              height: imageHeight,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(Icons.error, size: imageHeight * 0.25),
+                            ),
+                          ),
+                        ),
                       ),
-                      child: const Icon(Icons.error, size: 50),
-                    ),
-                  ),
+                    );
+                  },
                 ),
               ),
               const SizedBox(height: 16),

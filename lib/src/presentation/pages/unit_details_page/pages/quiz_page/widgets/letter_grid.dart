@@ -15,6 +15,9 @@ class LetterGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Next Question bosilgandan keyin readonly qilish
+    final isReadOnly = state.isCorrect != null;
+    
     return Wrap(
       spacing: 8,
       runSpacing: 8,
@@ -25,9 +28,11 @@ class LetterGrid extends StatelessWidget {
           .map(
             (entry) => LetterTile(
               letter: entry.value,
-              onTap: () => context.read<QuizBloc>().add(
-                    SelectLetterEvent(letter: entry.value, index: entry.key),
-                  ),
+              onTap: isReadOnly
+                  ? null // Readonly - qo'shib bo'lmaydi
+                  : () => context.read<QuizBloc>().add(
+                        SelectLetterEvent(letter: entry.value, index: entry.key),
+                      ),
             ),
           )
           .toList(),

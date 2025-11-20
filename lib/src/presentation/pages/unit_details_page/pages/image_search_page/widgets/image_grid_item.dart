@@ -38,13 +38,21 @@ class ImageGridItem extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: CachedNetworkImage(
-                imageUrl: imageUrl,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => const ImageShimmer(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    width: constraints.maxWidth,
+                    height: constraints.maxHeight,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => ImageShimmer(
+                      width: constraints.maxWidth,
+                      height: constraints.maxHeight,
+                      borderRadius: const BorderRadius.all(Radius.circular(10)),
+                    ),
+                    errorWidget: (context, url, error) => const Icon(Icons.error),
+                  );
+                },
               ),
             ),
             if (isSelected)

@@ -1,3 +1,4 @@
+import 'package:dictionarydox/src/core/utils/platform_utils.dart';
 import 'package:dictionarydox/src/domain/entities/unit.dart';
 import 'package:dictionarydox/src/presentation/blocs/unit/unit_bloc.dart';
 import 'package:dictionarydox/src/presentation/blocs/unit/unit_state.dart';
@@ -57,6 +58,10 @@ class _UnitDetailsPageState extends State<UnitDetailsPage>
                 );
               }
 
+              // Web uchun carousel ni olib tashlash - faqat list view
+              final isWeb = PlatformUtils.isWeb;
+              final shouldShowCarousel = isCarouselView && !isWeb;
+
               return Column(
                 children: [
                   Padding(
@@ -71,7 +76,7 @@ class _UnitDetailsPageState extends State<UnitDetailsPage>
                     ),
                   ),
                   Expanded(
-                    child: isCarouselView
+                    child: shouldShowCarousel
                         ? WordsCarouselView(
                             words: state.words,
                             onPlayAudio: playWordPronunciation,

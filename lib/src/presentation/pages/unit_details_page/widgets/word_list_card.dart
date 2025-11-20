@@ -27,26 +27,39 @@ class WordListCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (word.imageUrl != null)
-                GestureDetector(
-                  onTap: onImageTap,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: CachedNetworkImage(
-                      imageUrl: word.imageUrl!,
-                      width: 60,
-                      height: 60,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => const ImageShimmer(
-                        width: 60,
-                        height: 60,
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    // Responsive image size based on screen width
+                    final screenWidth = MediaQuery.of(context).size.width;
+                    final imageSize = screenWidth > 600
+                        ? 80.0 // Desktop/Tablet: larger
+                        : screenWidth > 400
+                            ? 70.0 // Large phone
+                            : 60.0; // Small phone
+
+                    return GestureDetector(
+                      onTap: onImageTap,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: CachedNetworkImage(
+                          imageUrl: word.imageUrl!,
+                          width: imageSize,
+                          height: imageSize,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => ImageShimmer(
+                            width: imageSize,
+                            height: imageSize,
+                            borderRadius: const BorderRadius.all(Radius.circular(8)),
+                          ),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error, size: imageSize * 0.5),
+                        ),
                       ),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.error),
-                    ),
-                  ),
+                    );
+                  },
                 ),
-              if (word.imageUrl != null) const SizedBox(width: 12),
+              if (word.imageUrl != null)
+                SizedBox(width: MediaQuery.of(context).size.width > 600 ? 16 : 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
